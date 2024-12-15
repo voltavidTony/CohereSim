@@ -1,0 +1,41 @@
+/// @file __FILE__.h
+/// @brief Declaration of the __CLASS__ class
+
+#pragma once
+
+#include "textbook_mode.h"
+
+/// @brief The TextbookMode class for 
+class __CLASS__ : public TextbookMode {
+public:
+
+    /// @brief Construct a new textbook mode cache
+    /// @param p_name The policy/protocol to use
+    __CLASS__(std::string p_name);
+    /// @brief Finalize the textbook mode output
+    ~__CLASS__();
+
+    /// @brief Evaluate a command received from the input
+    /// @param cmd The input command
+    /// @return True if the command was successful
+    bool evalutateCommand(std::string& cmd);
+
+    /// @brief Issue a BusRd message to neighboring caches
+    /// @param bus_msg The specific bus message
+    /// @param addr The address accessed
+    /// @return True if the 'COPIES-EXIST' line was asserted
+    bool issueBusMsg(bus_msg_e bus_msg, addr_t addr);
+
+    /// @brief Write the command format message to stderr
+    void printCmdFormatMessage();
+
+private:
+
+    /// @brief Revert the system back to the initial state
+    void reset();
+
+    /// @brief Print a horizontal line in the table
+    void printSeparator();
+    /// @brief Print simulation run statistics in CSV format (headerless)
+    void printStats();
+};

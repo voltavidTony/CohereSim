@@ -1,0 +1,57 @@
+/// @file __FILE__.cc
+/// @brief Implementation of the __CLASS__ class
+
+#include <iomanip>
+
+#include "__FILE__.h"
+
+/// @brief Table column widths
+enum col_width_e {};
+
+__CLASS__::__CLASS__(std::string p_name)
+    : TextbookMode(p_name) {
+    // Initialize cache components
+
+    // Initialize cache lines
+    for (uint32_t i = 0; i < N_TEXTBOOK_LINES; i++) {
+        lines[i].tag = 0;
+        lines[i].state = I;
+    }
+
+    // Print table header
+
+    printSeparator();
+    printStats();
+}
+__CLASS__::~__CLASS__() {
+
+    // Close out the table
+    printSeparator();
+}
+
+bool __CLASS__::evalutateCommand(std::string& cmd) {
+    return false;
+}
+
+bool __CLASS__::issueBusMsg(bus_msg_e bus_msg, addr_t addr) {
+    return false;
+}
+
+void __CLASS__::printCmdFormatMessage() {}
+
+void __CLASS__::reset() {
+    // Reset attributes
+
+    // Reset cache lines
+    for (uint32_t i = 0; i < N_TEXTBOOK_LINES; i++) {
+        lines[i].tag = 0;
+        lines[i].state = I;
+    }
+
+    // Restart table
+    printSeparator();
+    printStats();
+}
+
+void __CLASS__::printSeparator() {}
+void __CLASS__::printStats() {}

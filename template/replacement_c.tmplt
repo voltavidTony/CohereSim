@@ -1,0 +1,16 @@
+/// @file __FILE__.cc
+/// @brief Implementation of the __CLASS__ replacement policy
+
+#include "__FILE__.h"
+
+ADD_REPLACER_TO_CMD_LINE(__CLASS__);
+
+__CLASS__::__CLASS__(CacheABC& cache, uint32_t num_sets, uint32_t assoc)
+    : ReplacementPolicy(cache, num_sets, assoc) {}
+__CLASS__::~__CLASS__() {}
+
+uint32_t __CLASS__::getVictim(uint32_t set_idx) { return 0; }
+
+void __CLASS__::touch(uint32_t set_idx, uint32_t way_idx) {}
+
+void __CLASS__::printState(uint32_t set_idx) {}

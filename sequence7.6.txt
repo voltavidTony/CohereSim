@@ -1,0 +1,44 @@
+# Sequences from the textbook: Solihin - Fundamentals of Parallel Multicore Architecture - Chapter 7.6 - Worked Problems
+
+# Stream 1
+R1
+W1
+R1
+W1
+R2
+W2
+R2
+W2
+R3
+W3
+R3
+W3
+
+X
+
+# Stream 2
+R1
+R2
+R3
+W1
+W2
+W3
+R1
+R2
+R3
+W3
+W1
+
+X
+
+# Stream 3
+R1
+R2
+R3
+R3
+W1
+W1
+W1
+W1
+W2
+W3

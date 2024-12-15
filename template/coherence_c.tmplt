@@ -1,0 +1,75 @@
+/// @file __FILE__.cc
+/// @brief Implementation of the __CLASS__ coherence protocol
+
+#include "__FILE__.h"
+
+ADD_COHERENCE_TO_CMD_LINE(__CLASS__);
+
+void __CLASS__::PrRd(addr_t addr, cache_line* line) {
+    switch (line->state) {
+__STATES__
+        STATE_ERR;
+        return;
+    }
+}
+
+void __CLASS__::PrWr(addr_t addr, cache_line* line) {
+    /*Write-No-Allocate* if (line) */ switch (line->state) {
+__STATES__
+        STATE_ERR;
+        return;
+    /*Write-No-Allocate* } else { */
+    }
+}
+
+bool __CLASS__::BusRd(cache_line* line) {
+    switch (line->state) {
+__STATES__
+        STATE_ERR;
+        return false;
+    }
+}
+
+bool __CLASS__::BusRdX(cache_line* line) {
+    switch (line->state) {
+__STATES__
+        STATE_ERR;
+        return false;
+    }
+}
+
+bool __CLASS__::BusUpdt(cache_line* line) {
+    switch (line->state) {
+__STATES__
+        STATE_ERR;
+        return false;
+    }
+}
+
+bool __CLASS__::BusUpgr(cache_line* line) {
+    switch (line->state) {
+__STATES__
+        STATE_ERR;
+        return false;
+    }
+}
+
+bool __CLASS__::BusWr(cache_line* line) {
+    switch (line->state) {
+__STATES__
+        STATE_ERR;
+        return false;
+    }
+}
+
+bool __CLASS__::doesDirtySharing() {
+    return false;
+}
+
+bool __CLASS__::doesWriteNoAllocate() {
+    return false;
+}
+
+bool __CLASS__::isWriteBackNeeded(state_e state) {
+    return false;
+}

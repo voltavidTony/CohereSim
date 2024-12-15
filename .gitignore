@@ -1,0 +1,7 @@
+.vscode/
+bin/
+docs/html/
+tools/extractor
+traces/
+simulate_cache
+results.csv

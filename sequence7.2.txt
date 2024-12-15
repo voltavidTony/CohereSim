@@ -1,0 +1,8 @@
+# Sequence from the textbook: Solihin - Fundamentals of Parallel Multicore Architecture - Chapter 7.2
+R1
+W1
+R3
+W3
+R1
+R3
+R2

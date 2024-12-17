@@ -5,14 +5,11 @@
 #include "memory_bus.h"
 
 MemoryBus::MemoryBus(cache_config& config) : config(config) {
-    // Make sure to zero-initialize array of caches
-    caches = new Cache * [MAX_N_CACHES] {};
     tag_offset = MSB(config.cache_size / config.assoc);
 }
 MemoryBus::~MemoryBus() {
     for (uint32_t i = 0; i < MAX_N_CACHES; i++)
         delete caches[i];
-    operator delete[](caches);
 }
 
 void MemoryBus::issuePrRd(addr_t addr, uint32_t cache_id) {

@@ -36,7 +36,7 @@ public:
 private:
 
     /// @brief Array of this memory bus's caches
-    Cache** caches;
+    Cache* caches[MAX_N_CACHES]{ 0 };
 
     /// @brief Config for this memory bus
     cache_config config;

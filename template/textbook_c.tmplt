@@ -1,8 +1,6 @@
 /// @file __FILE__.cc
 /// @brief Implementation of the __CLASS__ class
 
-#include <iomanip>
-
 #include "__FILE__.h"
 
 /// @brief Table column widths

@@ -4,7 +4,6 @@
 #pragma once
 
 #include "cache_abc.h"
-#include "typedefs.h"
 
 /// @brief The TextbookMode abstract base class
 class TextbookMode : public CacheABC {

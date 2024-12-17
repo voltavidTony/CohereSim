@@ -1,9 +1,6 @@
 /// @file textbook_mode_replacer.cc
 /// @brief Implementation of the TextbookModeReplacer class
 
-#include <iostream>
-#include <iomanip>
-
 #include "replacement_policy.h"
 #include "textbook_mode_replacer.h"
 

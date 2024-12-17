@@ -3,10 +3,7 @@
 
 #pragma once
 
-#include <iostream>
-
 #include "cache_abc.h"
-#include "typedefs.h"
 
 /// @brief Error message printed when a cache line is in a state not supported by the coherence protocol
 #define STATE_ERR std::cerr << __FILE__ << ':' << __FUNCTION__ << ": Cache line in invalid state: " << (int)(line->state) << std::endl

@@ -3,10 +3,7 @@
 
 #pragma once
 
-#include <iostream>
-
 #include "cache_abc.h"
-#include "typedefs.h"
 
 /// @brief The base class for replacement policies
 class ReplacementPolicy {

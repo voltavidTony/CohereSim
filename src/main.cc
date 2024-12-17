@@ -1,9 +1,7 @@
 /// @file main.cc
 /// @brief This file processes the command line arguments and controls the program flow
 
-#include <cstring>
 #include <fstream>
-#include <iostream>
 #include <signal.h>
 
 #include "memory_bus.h"

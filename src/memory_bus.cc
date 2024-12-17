@@ -1,8 +1,6 @@
 /// @file memory_bus.cc
 /// @brief Implementation of the MemoryBus class methods
 
-#include <iostream>
-
 #include "cache.h"
 #include "memory_bus.h"
 

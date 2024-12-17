@@ -1,8 +1,6 @@
 /// @file textbook_mode_coherence.cc
 /// @brief Implementation of the TextbookModeCoherence and BusEvent classes
 
-#include <iomanip>
-
 #include "coherence_protocol.h"
 #include "textbook_mode_coherence.h"
 

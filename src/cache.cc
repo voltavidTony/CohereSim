@@ -1,8 +1,6 @@
 /// @file cache.cc
 /// @brief Definition of the Cache class methods
 
-#include <iostream>
-
 #include "cache.h"
 #include "coherence_protocol.h"
 #include "memory_bus.h"

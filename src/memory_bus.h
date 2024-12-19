@@ -5,6 +5,9 @@
 
 #include "typedefs.h"
 
+/// @brief The maximum number of caches supported by the current trace format (7 bit ID = 128 ID values)
+#define MAX_N_CACHES 0b10000000
+
 /// @brief The MemoryBus class connecting multiple caches and main memory
 class MemoryBus {
 public:

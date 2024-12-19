@@ -30,9 +30,9 @@ Note:: Every cache dimension must be a power of 2. Any other value is rejected b
 
 ### Batch
 
-Note:: This mode of operation is not implemented yet.
-
 This mode of operation is designed to accelerate the production of the runtime metrics by reading a [trace file](docs/pages/templates.md) once, but processing it across multiple cache configurations in parallel. As such, the value of the `config` field in the output indicates which line of the configs file was the source for the configuration that the accompanying statistics are for. The cache configurations are specified in a configs file, where each line is one instance of the first 5 command line arguments for 'Single Metric' mode, `cache_size[unit]`, `line_size`, `associativity`, `coherence`, and `replacer`.
+
+Note:: Due to each configuration processing the trace file in parallel, the order of configurations in the output is arbitrary. A single configuration's output, however, is guaranteed to be contiguous.
 
 The command line arguments for this mode are `<configs_file> <trace_file> [trace_limit]`
 

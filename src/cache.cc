@@ -157,7 +157,7 @@ void Cache::printStats() {
         std::cout << config.id << ',' << cache_id << ',' <<
             ((double)statistics[ReadMiss] + (double)statistics[WriteMiss]) / ((double)statistics[ProcRead] + (double)statistics[ProcWrite]);
         // Print each statistics value
-        for (size_t i = 0; i < N_STATISTICS; i++) std::cout << ',' << statistics[i];
+        for (uint32_t i = 0; i < N_STATISTICS; i++) std::cout << ',' << statistics[i];
         std::cout << std::endl;
     }
 }

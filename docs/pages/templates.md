@@ -33,8 +33,8 @@ This mode is the simplest: Specify a file name in `snake_case`, and a blank (min
 Note:: This script is located in the `template` directory, but can be run from anywhere.
 
 Usage:
-1. `./mksrc.sh coherence <coh_name> <states..>`
-2. `./mksrc.sh replacement|textbook <rep_name>`
+1. `./mksrc.sh coherence <class_name> <states..>`
+2. `./mksrc.sh replacement|textbook <class_name>`
 3. `./mksrc.sh <file_name>`
 
 - `class_name`: The name of the new policy/protocol (TitleCase)

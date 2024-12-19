@@ -10,9 +10,6 @@
 #include <iostream>
 #include <map>
 
-/// @brief The maximum number of caches supported by the current trace format (7 bit ID = 128 ID values)
-#define MAX_N_CACHES 0b10000000
-
 /// @brief The number of cache lines that textbook mode uses
 #define N_TEXTBOOK_LINES 5
 #if N_TEXTBOOK_LINES > 9
@@ -32,6 +29,36 @@ class CoherenceProtocol;
 class MemoryBus;
 /// @brief Replacement policy base class
 class ReplacementPolicy;
+
+/// @brief Argument indices for single metrics run
+enum args_single_e {
+    ARG_S_PROG,
+    ARG_CACHE_SIZE,
+    ARG_LINE_SIZE,
+    ARG_ASSOCIATIVITY,
+    ARG_COHERENCE,
+    ARG_REPLACEMENT,
+    ARG_C_COUNT,
+    ARG_S_TRACE_FILE = ARG_C_COUNT,
+    ARG_S_TRACE_LIMIT,
+    ARG_S_COUNT
+};
+
+/// @brief Argument indices for multiple metrics run
+enum args_batch_e {
+    ARG_M_PROG,
+    ARG_CONFIG,
+    ARG_M_TRACE_FILE,
+    ARG_M_TRACE_LIMIT,
+    ARG_M_COUNT
+};
+
+/// @brief Argument indices for textbook (interactive) mode
+enum args_textbook_e {
+    ARG_T_PROG,
+    ARG_TEXTBOOK,
+    ARG_T_COUNT
+};
 
 /// @brief Cache line state
 enum state_e {
@@ -158,6 +185,14 @@ struct ci_less {
     /// @return True if 's1' comes lexicographically before 's2'
     bool operator() (const std::string& s1, const std::string& s2) const;
 };
+
+/// @brief The format of a single trace
+struct trace_t {
+    /// @brief The first byte of a trace; the 7-bit CPU ID combined with the 1-bit R/W mode
+    uint8_t op;
+    /// @brief The address that is accessed
+    addr_t addr;
+} __attribute__((packed));
 
 /// @brief A map from coherence protocol names to their factory functions
 extern std::map<std::string, coh_factory_t, ci_less>* coherence_map;

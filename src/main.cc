@@ -1,50 +1,27 @@
 /// @file main.cc
-/// @brief This file processes the command line arguments and controls the program flow
+/// @brief This file processes the command line arguments, provides helper methods for processing the command line arguments, and decides what to run
 
+#include <filesystem>
 #include <fstream>
-#include <signal.h>
 
-#include "memory_bus.h"
-#include "textbook_mode_coherence.h"
-#include "textbook_mode_replacer.h"
+#include "typedefs.h"
+#include "run_modes.h"
 
 /// @brief The value of 'argc' if no arguments were passed on the command line
 #define NO_ARGS 1
 
-/// @brief Argument indices for single config run and within config file
-enum args_single_e {
-    ARG_S_PROG,
-    ARG_CACHE_SIZE,
-    ARG_LINE_SIZE,
-    ARG_ASSOCIATIVITY,
-    ARG_COHERENCE,
-    ARG_REPLACEMENT,
-    ARG_S_TRACE_FILE,
-    ARG_S_TRACE_LIMIT,
-    ARG_S_COUNT
-};
+/// @brief The number of columns that appear in the output statistics
+#define NUM_COLUMNS (N_STATISTICS + 3)
 
-/// @brief Argument indices for multiple configs file run
-enum args_batch_e {
-    ARG_M_PROG,
-    ARG_CONFIG,
-    ARG_M_TRACE_FILE,
-    ARG_M_TRACE_LIMIT,
-    ARG_M_COUNT
-};
-
-/// @brief Argument indices for textbook (interactive) mode
-enum args_textbook_e {
-    ARG_T_PROG,
-    ARG_TEXTBOOK,
-    ARG_T_COUNT
-};
+/// @brief The size of the config line buffer
+#define CONFIG_LINE_SIZE (ARG_C_COUNT * 10)
 
 std::map<std::string, coh_factory_t, ci_less>* coherence_map = nullptr;
 std::map<std::string, rep_factory_t, ci_less>* replacement_map = nullptr;
 
 /// @brief CSV-friendly names for cache runtime statistics. Make sure these match up with 'bus_msg_e' and 'statistic_e'
-constexpr const char* stat_names[N_STATISTICS] = {
+constexpr const char* stat_names[NUM_COLUMNS] = {
+    "config", "core", "miss rate",
     "processor reads", "processor writes",
     "bus reads", "bus readxs", "bus updates", "bus upgrades", "bus writes",
     "read misses", "write misses",
@@ -66,53 +43,6 @@ void exitIf(bool condition, std::string msg, uint32_t config_id, uint32_t arg_in
     }
 }
 
-/// @brief When Ctrl+C is issued, just close the input stream so the program can perform proper shutdown
-/// @param signum The signal number
-void signalCallback(int signum) {
-    fclose(stdin);
-    std::cout << "\r";
-}
-
-/// @brief Run the program in textbook mode (aka interactive mode)
-/// @param name_of_showcased The selected policy/protocol
-void runTextbookMode(char* name_of_showcased) {
-    // Get the correct textbook mode class
-    TextbookMode* textbook_mode;
-    if (coherence_map->count(name_of_showcased)) textbook_mode = new TextbookModeCoherence(name_of_showcased);
-    else if (replacement_map->count(name_of_showcased)) textbook_mode = new TextbookModeReplacer(name_of_showcased);
-    else {
-        std::cerr << ARG_TEXTBOOK << '@' << 0 << ": " << "Couldn't find a coherence protocol or replacement policy with that name!" << std::endl;
-        exit(ARG_TEXTBOOK);
-    }
-
-    // Setup sigint catch (so that bottom border of table can be printed)
-    signal(SIGINT, signalCallback);
-
-    // Process commands
-    std::string line;
-    for (size_t line_count = 1; std::getline(std::cin, line); line_count++) {
-        // Move cursor up one line if the output and input are the terminal
-        if (isatty(fileno(stdin)) && isatty(fileno(stdout))) std::cout << "\e[A";
-
-        // Ignore empty lines and comments
-        if (line.empty() || line[0] == '#') continue;
-
-        // Evaluate command
-        if (!textbook_mode->evalutateCommand(line)) {
-            // Bad command
-            if (!isatty(fileno(stdin))) std::cerr << "Line " << line_count << ": ";
-            textbook_mode->printCmdFormatMessage();
-        }
-    }
-
-    // Cleanup
-    delete textbook_mode;
-}
-
-/// @brief Parse the given arguments into a memory bus configuration
-/// @param argc The number of program arguments
-/// @param argv The array of program arguments
-/// @param config The configuration struct to populate
 void getConfig(int argc, char* argv[], cache_config& config) {
     char* suffix;   // Points to the next character after each parse
 
@@ -153,17 +83,14 @@ void getConfig(int argc, char* argv[], cache_config& config) {
     config.replacer = argv[ARG_REPLACEMENT];
 }
 
-/// @brief Open the trace file and read the trace limit
-/// @param argc The number of program arguments
-/// @param argv The array of program arguments
-/// @param trace_file An ifstream that will become the trace file
-/// @param arg_max_count The number of arguments when the trace limit argument is present
-/// @return The trace limit
 size_t getTrace(int argc, char* argv[], std::ifstream& trace_file, int arg_max_count) {
     // Open trace file (2nd to last argument)
+    exitIf(std::filesystem::file_size(argv[arg_max_count - 2]) % sizeof(trace_t), "Malformed trace file", 0, arg_max_count - 2);
     trace_file.open(argv[arg_max_count - 2], std::ios_base::in | std::ios_base::binary);
     std::string tf_error = "Trace file read error: ";
     exitIf(!trace_file, tf_error + std::strerror(errno), 0, arg_max_count - 2);
+
+    // If trace limit was not specified
     if (argc < arg_max_count) return 0;
 
     // Get trace limit (last argument)
@@ -173,44 +100,56 @@ size_t getTrace(int argc, char* argv[], std::ifstream& trace_file, int arg_max_c
     return trace_limit;
 }
 
-/// @brief Run the program in batch mode
-/// @param argc The number of command line arguments
-/// @param argv An array to the command line arguments
-void runBatchMetrics(int argc, char* argv[]) {
-    std::cerr << "Batch metrics mode is not yet implemented!" << std::endl;
-}
+void readConfigurations(std::vector<cache_config>& configs, char* configs_file_path) {
+    // Get the configs file
+    std::ifstream configs_file;
+    configs_file.open(configs_file_path);
+    std::string cf_error = "Configs file read error: ";
+    exitIf(!configs_file, cf_error + std::strerror(errno), 0, ARG_CONFIG);
 
-/// @brief Process a trace file from a single config run (config from cmd args)
-/// @param argc The number of program arguments
-/// @param argv The array of program arguments
-void runSingleMetrics(int argc, char* argv[]) {
-    // Get configuration
-    cache_config config = { 0 };
-    getConfig(argc, argv, config);
+    // Need to simulate argv like from the command line when reading in the configurations
+    char** config_argv = new char* [ARG_C_COUNT];
+    char* config_line_cstr = new char[CONFIG_LINE_SIZE] {};
+    config_argv[0] = nullptr; // First argument is unused
+    config_argv[1] = config_line_cstr; // Second argument is the start of the c-string
 
-    // Get trace file and limit
-    std::ifstream trace_file;
-    size_t trace_limit = getTrace(argc, argv, trace_file, ARG_S_COUNT);
+    // Read in configurations
+    std::string config_line;
+    for (uint32_t config_id = 1; std::getline(configs_file, config_line); config_id++) {
+        // A space-separated string can be turned into an argv string by replacing the spaces with nulls
+        //   (as long as there is no quotation or other space-preserving stuff, which is true in this case)
+        uint32_t config_argc = 2;
+        uint32_t copy_i = 0;
+        while (copy_i < CONFIG_LINE_SIZE && config_line[copy_i]) {
+            config_line_cstr[copy_i] = config_line[copy_i];
+            if (config_line_cstr[copy_i] == ' ') {
+                exitIf(config_argc == ARG_C_COUNT, "Too many arguments in cache config", config_id, ARG_C_COUNT);
+                config_line_cstr[copy_i] = '\0';
+                config_argv[config_argc++] = &config_line_cstr[copy_i + 1];
+            }
+            copy_i++;
+        }
+        config_argc++;
+        exitIf(config_argc < ARG_C_COUNT, "Too few arguments in cache config", config_id, ARG_C_COUNT);
+        exitIf(copy_i == CONFIG_LINE_SIZE, "Config string longer than expected", config_id, ARG_C_COUNT);
+        config_line_cstr[copy_i] = '\0';
 
-    // Create memory bus
-    MemoryBus memory_bus(config);
-
-    // Execute traces
-    addr_t addr;
-    uint8_t op;
-    for (size_t line_count = 0; !(trace_file.eof() || (trace_limit && line_count == trace_limit)); line_count++) {
-        trace_file.read((char*)&op, sizeof(op));
-        trace_file.read((char*)&addr, sizeof(addr));
-        le32toh(addr);
-        if (op & 1) memory_bus.issuePrWr(addr, op >> 1);
-        else memory_bus.issuePrRd(addr, op >> 1);
+        // Parse the configuration
+        cache_config config;
+        config.id = config_id;
+        getConfig(config_argc, config_argv, config);
+        configs.emplace_back(config); // Inefficient, but inconsequential in the context of this program
     }
 
-    // Print statistics
-    std::cout << "config,core,miss rate";
-    for (size_t i = 0; i < N_STATISTICS; i++) std::cout << ',' << stat_names[i];
+    // Cleanup
+    delete config_argv;
+    delete config_line_cstr;
+}
+
+void printStatsHeader() {
+    std::cout << stat_names[0];
+    for (uint32_t i = 1; i < NUM_COLUMNS; i++) std::cout << ',' << stat_names[i];
     std::cout << std::endl;
-    memory_bus.printStats();
 }
 
 /// @brief Print the program usage method
@@ -220,7 +159,7 @@ void usageMsg() {
     std::cout << "  (2) ./simulate_cache <configuration> <trace_file> [trace_limit]" << std::endl;
     std::cout << "Description:" << std::endl;
     std::cout << "  (1) Run the simulator in textbook mode (see the manual for more info)" << std::endl;
-    std::cout << "  (2) Run the simulator in standard mode (see below)" << std::endl;
+    std::cout << "  (2) Run the simulator in metrics mode (see below)" << std::endl;
     std::cout << "Options:" << std::endl;
     std::cout << "  configuration: Either a single memory bus configuration (see below) or" << std::endl;
     std::cout << "                   the path to a file containing multiple memory bus configurations" << std::endl;

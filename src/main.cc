@@ -85,10 +85,10 @@ void getConfig(int argc, char* argv[], cache_config& config) {
 
 size_t getTrace(int argc, char* argv[], std::ifstream& trace_file, int arg_max_count) {
     // Open trace file (2nd to last argument)
-    exitIf(std::filesystem::file_size(argv[arg_max_count - 2]) % sizeof(trace_t), "Malformed trace file", 0, arg_max_count - 2);
     trace_file.open(argv[arg_max_count - 2], std::ios_base::in | std::ios_base::binary);
     std::string tf_error = "Trace file read error: ";
     exitIf(!trace_file, tf_error + std::strerror(errno), 0, arg_max_count - 2);
+    exitIf(std::filesystem::file_size(argv[arg_max_count - 2]) % sizeof(trace_t), "Malformed trace file", 0, arg_max_count - 2);
 
     // If trace limit was not specified
     if (argc < arg_max_count) return 0;

@@ -20,20 +20,23 @@ void runBatchMetrics(int argc, char* argv[]) {
     std::vector<cache_config> configs;
     readConfigurations(configs, argv[ARG_CONFIG]);
 
-    // Get trace file, trace limit, and trace file buffer
+    // Get trace file, trace limit, and trace file buffers
     std::ifstream trace_file;
     size_t trace_limit = getTrace(argc, argv, trace_file, ARG_M_COUNT);
+
+    // The trace file chunks will be "double buffered" to allow for simultaneous reading and processing
+    trace_t* trace_swap = new trace_t[N_TRACE_BUF];
     trace_t* trace_buf = new trace_t[N_TRACE_BUF];
     uint32_t bytes_read;
 
     // Setup synchronization objects
     auto sync_point_task = [&]() {
-        trace_file.read((char*)trace_buf, N_TRACE_BUF * sizeof(trace_t));
+        // Switch to the new chunk
+        std::swap(trace_buf, trace_swap);
         bytes_read = trace_file.gcount();
         };
-    std::barrier sync_point(configs.size(), sync_point_task);
+    std::barrier sync_point(configs.size() + 1, sync_point_task);
     std::mutex stats_print_mutex;
-    sync_point_task(); // Run barrier-task once as initialization task
 
     // Set up worker threads
     auto batch_metrics_task = [&](cache_config config) {
@@ -52,11 +55,8 @@ void runBatchMetrics(int argc, char* argv[]) {
                 else memory_bus.issuePrRd(le32toh(addr), op >> 1);
                 line_count++;
 
-                // Print statistics and exit if trace limit reached
-                if (trace_limit && line_count == trace_limit) {
-                    memory_bus.printStats();
-                    return;
-                }
+                // Exit the while loop if trace limit is reached
+                if (trace_limit && line_count == trace_limit) goto print_stats;
             }
 
             // Wait for the next block to be read in
@@ -64,21 +64,37 @@ void runBatchMetrics(int argc, char* argv[]) {
         }
 
         // Print statistics (Note the mutex is automatically released as part of the implicit destructor call)
+    print_stats:
         std::lock_guard guard(stats_print_mutex);
         memory_bus.printStats();
         };
     std::vector<std::thread> workers;
     workers.reserve(configs.size());
 
-    // Run each configuration
-    printStatsHeader();
+    // Read first chunk
+    trace_file.read((char*)trace_buf, N_TRACE_BUF * sizeof(trace_t));
+    bytes_read = trace_file.gcount();
+
+    // Start each worker thread
+    printStatsHeader(); // Ensure CSV header prints first
     for (cache_config& config : configs)
         workers.emplace_back(batch_metrics_task, config);
+
+    // Read each subsequent chunk while the worker threads process the current one
+    size_t line_count = bytes_read / 5;
+    while (bytes_read && !(trace_limit && line_count >= trace_limit)) {
+        trace_file.read((char*)trace_swap, N_TRACE_BUF * sizeof(trace_t));
+        sync_point.arrive_and_wait();
+        line_count += bytes_read / 5;
+    }
+
+    // Wait for worker threads
     for (std::thread& worker : workers)
         worker.join();
 
     // Cleanup
     delete trace_buf;
+    delete trace_swap;
 }
 
 void runSingleMetrics(int argc, char* argv[]) {

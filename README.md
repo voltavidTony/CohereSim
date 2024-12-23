@@ -9,11 +9,12 @@
 - Email: efg@ncsu.edu
 
 | Version | Programmer | Description |
-|:-:|-|-|
+|:-|-|-|
 | 1.0 | Ahmad Samih & Yan Solihin | Initial Version |
 | 2.0 | Ed Gehringer | Revised for Spring 2015 |
 | 3.0 | Anthony Spendlove | Complete rewrite for Spring 2025 |
 | 3.1 | Anthony Spendlove | Add batch mode (parallel execution) |
+| 3.1.1 | Anthony Spendlove | Trace file chunks are "double buffered" in batch mode |
 
 (Version history begins with v3.0)
 
@@ -23,6 +24,7 @@ This software operates under the GNU General Public License v3.0.
 
 - Implement Directory Protocols
 - Cross-Platform Support
+- Compressed Trace Files
 - More Protocols and Policies
 - 2-level Cache Support
 

@@ -23,9 +23,6 @@ void MSI::PrRd(addr_t addr, cache_line* line) {
 void MSI::PrWr(addr_t addr, cache_line* line) {
     switch (line->state) {
     case I:
-        cache.issueBusMsg(BusReadX, addr);
-        line->state = M;
-        break;
     case S:
         cache.issueBusMsg(BusReadX, addr);
         line->state = M;

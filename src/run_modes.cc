@@ -2,10 +2,10 @@
 /// @brief Implementation of the three modes of operation: Single Metrics, Batch Metrics, and Textbook
 
 #include <barrier>
+#include <csignal>
 #include <fstream>
 #include <mutex>
 #include <thread>
-#include <signal.h>
 
 #include "main.h"
 #include "memory_bus.h"

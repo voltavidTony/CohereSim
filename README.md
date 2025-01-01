@@ -92,6 +92,8 @@ See the [trace file generation guide](docs/pages/gen_traces.md) to learn how to 
 | | 📜 mksrc.sh || Source file generator script |
 | | 📄 replacement_c.tmplt || Replacement policy source file template |
 | | 📄 replacement_h.tmplt || Replacement policy header file template |
+| | 📄 textbook_c.tmplt || Textbook mode source file template |
+| | 📄 textbook_h.tmplt || Textbook mode header file template |
 | 📂 tools/ ||| First- and third-party tool suite for trace file generation |
 | | 📦 gem5/ || gem5 computer hardware simulator |
 | | 📦 parsec-benchmark/ || PARSEC benchmark suite |

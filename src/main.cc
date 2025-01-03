@@ -129,7 +129,6 @@ void readConfigurations(std::vector<cache_config>& configs, char* configs_file_p
             }
             copy_i++;
         }
-        config_argc++;
         exitIf(config_argc < ARG_C_COUNT, "Too few arguments in cache config", config_id, ARG_C_COUNT);
         exitIf(copy_i == CONFIG_LINE_SIZE, "Config string longer than expected", config_id, ARG_C_COUNT);
         config_line_cstr[copy_i] = '\0';

@@ -111,7 +111,7 @@ enum bus_msg_e {
 };
 
 /// @brief Cache runtime statistic IDs
-/// @note Continuation of 'bus_msg_e'
+/// @note Continuation of '::bus_msg_e'
 enum statistic_e {
     /// @brief Read miss on a cache line
     ReadMiss = N_MESSAGES,  // Continuation of 'bus_msg_e'

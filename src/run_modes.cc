@@ -1,4 +1,4 @@
-/// @file batch_metrics.cc
+/// @file run_modes.cc
 /// @brief Implementation of the three modes of operation: Single Metrics, Batch Metrics, and Textbook
 
 #include <barrier>

@@ -20,13 +20,14 @@
 
 This software operates under the GNU General Public License v3.0.
 
+A copy of this documentation is hosted on [my GitHub Pages](https://voltavidtony.github.io/docs/cache-sim/index.html).
+
 ## Roadmap
 
 - Implement Directory Protocols
 - Cross-Platform Support
 - Compressed Trace Files
 - More Protocols and Policies
-- 2-level Cache Support
 
 ## Cache simulator
 

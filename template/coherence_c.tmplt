@@ -5,7 +5,7 @@
 
 ADD_COHERENCE_TO_CMD_LINE(__CLASS__);
 
-void __CLASS__::PrRd(addr_t addr, cache_line* line) {
+void __CLASS__::PrRd(cache_line* line) {
     switch (line->state) {
 __STATES__
         STATE_ERR;
@@ -13,7 +13,7 @@ __STATES__
     }
 }
 
-void __CLASS__::PrWr(addr_t addr, cache_line* line) {
+void __CLASS__::PrWr(cache_line* line) {
     /*Write-No-Allocate* if (line) */ switch (line->state) {
 __STATES__
         STATE_ERR;

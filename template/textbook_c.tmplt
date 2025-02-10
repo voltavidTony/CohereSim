@@ -31,7 +31,7 @@ bool __CLASS__::evalutateCommand(std::string& cmd) {
     return false;
 }
 
-bool __CLASS__::issueBusMsg(bus_msg_e bus_msg, addr_t addr) {
+bool __CLASS__::issueBusMsg(bus_msg_e bus_msg) {
     return false;
 }
 

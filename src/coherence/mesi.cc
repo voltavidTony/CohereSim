@@ -5,14 +5,14 @@
 
 ADD_COHERENCE_TO_CMD_LINE(MESI);
 
-void MESI::PrRd(addr_t addr, cache_line* line) {
+void MESI::PrRd(cache_line* line) {
     switch (line->state) {
     case M:
     case E:
     case S:
         break;
     case I:
-        line->state = cache.issueBusMsg(BusRead, addr) ? S : E;
+        line->state = cache.issueBusMsg(BusRead) ? S : E;
         break;
     default:
         STATE_ERR;
@@ -20,14 +20,14 @@ void MESI::PrRd(addr_t addr, cache_line* line) {
     }
 }
 
-void MESI::PrWr(addr_t addr, cache_line* line) {
+void MESI::PrWr(cache_line* line) {
     switch (line->state) {
     case I:
-        cache.issueBusMsg(BusReadX, addr);
+        cache.issueBusMsg(BusReadX);
         line->state = M;
         break;
     case S:
-        cache.issueBusMsg(BusUpgrade, addr);
+        cache.issueBusMsg(BusUpgrade);
     case E:
         line->state = M;
     case M:

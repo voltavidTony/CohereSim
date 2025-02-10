@@ -5,13 +5,13 @@
 
 ADD_COHERENCE_TO_CMD_LINE(MSI);
 
-void MSI::PrRd(addr_t addr, cache_line* line) {
+void MSI::PrRd(cache_line* line) {
     switch (line->state) {
     case M:
     case S:
         break;
     case I:
-        cache.issueBusMsg(BusRead, addr);
+        cache.issueBusMsg(BusRead);
         line->state = S;
         break;
     default:
@@ -20,11 +20,11 @@ void MSI::PrRd(addr_t addr, cache_line* line) {
     }
 }
 
-void MSI::PrWr(addr_t addr, cache_line* line) {
+void MSI::PrWr(cache_line* line) {
     switch (line->state) {
     case I:
     case S:
-        cache.issueBusMsg(BusReadX, addr);
+        cache.issueBusMsg(BusReadX);
         line->state = M;
     case M:
         break;

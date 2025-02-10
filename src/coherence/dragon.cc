@@ -5,7 +5,7 @@
 
 ADD_COHERENCE_TO_CMD_LINE(Dragon);
 
-void Dragon::PrRd(addr_t addr, cache_line* line) {
+void Dragon::PrRd(cache_line* line) {
     switch (line->state) {
     case E:
     case Sc:
@@ -13,7 +13,7 @@ void Dragon::PrRd(addr_t addr, cache_line* line) {
     case M:
         break;
     case Unallocated:
-        line->state = cache.issueBusMsg(BusRead, addr) ? Sc : E;
+        line->state = cache.issueBusMsg(BusRead) ? Sc : E;
         break;
     default:
         STATE_ERR;
@@ -21,20 +21,20 @@ void Dragon::PrRd(addr_t addr, cache_line* line) {
     }
 }
 
-void Dragon::PrWr(addr_t addr, cache_line* line) {
+void Dragon::PrWr(cache_line* line) {
     switch (line->state) {
     case E:
         line->state = M;
         break;
     case Sc:
     case Sm:
-        line->state = cache.issueBusMsg(BusUpdate, addr) ? Sm : M;
+        line->state = cache.issueBusMsg(BusUpdate) ? Sm : M;
     case M:
         break;
     case Unallocated:
         line->state =
             // Short circuit AND. BusUpdate is only issued if other caches have the line
-            cache.issueBusMsg(BusRead, addr) && cache.issueBusMsg(BusUpdate, addr)
+            cache.issueBusMsg(BusRead) && cache.issueBusMsg(BusUpdate)
             ? Sm : M;
         break;
     default:

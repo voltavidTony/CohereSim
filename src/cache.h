@@ -26,9 +26,8 @@ public:
 
     /// @brief Issue a BusRd message to neighboring caches
     /// @param bus_msg The specific bus message
-    /// @param addr The address accessed
     /// @return True if the 'COPIES-EXIST' line was asserted
-    bool issueBusMsg(bus_msg_e bus_msg, addr_t addr);
+    bool issueBusMsg(bus_msg_e bus_msg);
     /// @brief Issue a bus message to this cache
     /// @param bus_msg The specific bus message
     /// @param addr The address accessed
@@ -72,6 +71,11 @@ private:
 
     /// @brief Cache runtime statistics
     size_t statistics[N_STATISTICS] = { 0 };
+
+    /// @brief The address being accessed by the current processor read or write
+    /// @note Remembering the currently accessed address only works because each memory
+    /// access is atomic, i.e. all resulting bus messages will finish before the next memory access
+    addr_t curr_access_addr;
 
     /// @brief Update the correct state transition statistic
     /// @param before The state the line was in before

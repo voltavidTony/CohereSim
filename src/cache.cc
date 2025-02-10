@@ -32,6 +32,9 @@ Cache::~Cache() {
 }
 
 void Cache::receivePrRd(addr_t addr) {
+    // Remember the current address being accessed so that it can be attached to issued bus messages
+    curr_access_addr = addr;
+
     // Find the accessed line
     cache_line* line = findLine(addr);
     statistics[ProcRead]++;
@@ -42,7 +45,7 @@ void Cache::receivePrRd(addr_t addr) {
 
     // Initiate the PrRd state change
     state_e prev_state = line->state;
-    coherence_protocol->PrRd(addr, line);
+    coherence_protocol->PrRd(line);
     stateChangeStatistic(prev_state, line->state);
 
     // Inform replacer of cache line access
@@ -50,6 +53,9 @@ void Cache::receivePrRd(addr_t addr) {
     replacement_policy->touch(line_idx / config.assoc, line_idx % config.assoc);
 }
 void Cache::receivePrWr(addr_t addr) {
+    // Remember the current address being accessed so that it can be attached to issued bus messages
+    curr_access_addr = addr;
+
     // Find the accessed line
     cache_line* line = findLine(addr);
     statistics[ProcWrite]++;
@@ -66,7 +72,7 @@ void Cache::receivePrWr(addr_t addr) {
     // Initiate the PrWr state change
     state_e prev_state;
     if (line) prev_state = line->state;
-    coherence_protocol->PrWr(addr, line);
+    coherence_protocol->PrWr(line);
     if (line) stateChangeStatistic(prev_state, line->state);
 
     // Inform replacer of cache line access
@@ -76,21 +82,21 @@ void Cache::receivePrWr(addr_t addr) {
     }
 }
 
-bool Cache::issueBusMsg(bus_msg_e bus_msg, addr_t addr) {
+bool Cache::issueBusMsg(bus_msg_e bus_msg) {
     // Send the bus message to each cache
     bool copies;
     switch (bus_msg) {
     case BusRead:
     case BusReadX:
         flushed = false;
-        copies = memory_bus.issueBusMsg(bus_msg, addr, cache_id);
+        copies = memory_bus.issueBusMsg(bus_msg, curr_access_addr, cache_id);
         // Figure out where the cache line was read from
         statistics[flushed ? CacheToCache : LineFetch]++;
         break;
     case BusUpdate:
     case BusUpgrade:
     case BusWrite:
-        copies = memory_bus.issueBusMsg(bus_msg, addr, cache_id);
+        copies = memory_bus.issueBusMsg(bus_msg, curr_access_addr, cache_id);
         break;
     default: // Only respond to actual bus messages (enum has other values)
         return false;

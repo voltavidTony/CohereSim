@@ -5,7 +5,7 @@
 
 ADD_COHERENCE_TO_CMD_LINE(MOESI);
 
-void MOESI::PrRd(addr_t addr, cache_line* line) {
+void MOESI::PrRd(cache_line* line) {
     switch (line->state) {
     case M:
     case O:
@@ -13,7 +13,7 @@ void MOESI::PrRd(addr_t addr, cache_line* line) {
     case S:
         break;
     case I:
-        line->state = cache.issueBusMsg(BusRead, addr) ? S : E;
+        line->state = cache.issueBusMsg(BusRead) ? S : E;
         break;
     default:
         STATE_ERR;
@@ -21,15 +21,15 @@ void MOESI::PrRd(addr_t addr, cache_line* line) {
     }
 }
 
-void MOESI::PrWr(addr_t addr, cache_line* line) {
+void MOESI::PrWr(cache_line* line) {
     switch (line->state) {
     case I:
-        cache.issueBusMsg(BusReadX, addr);
+        cache.issueBusMsg(BusReadX);
         line->state = M;
         break;
     case O:
     case S:
-        cache.issueBusMsg(BusUpgrade, addr);
+        cache.issueBusMsg(BusUpgrade);
     case E:
         line->state = M;
     case M:

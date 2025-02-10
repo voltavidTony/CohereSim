@@ -22,9 +22,8 @@ public:
 
     /// @brief Issue a BusRd message to neighboring caches
     /// @param bus_msg The specific bus message
-    /// @param addr The address accessed
     /// @return True if the 'COPIES-EXIST' line was asserted
-    virtual bool issueBusMsg(bus_msg_e bus_msg, addr_t addr) { return false; }
+    virtual bool issueBusMsg(bus_msg_e bus_msg) { return false; }
 
     /// @brief Get the state of a line in the cache
     /// @param set_idx The index of the set containing the line

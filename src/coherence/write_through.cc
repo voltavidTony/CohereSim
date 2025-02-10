@@ -5,12 +5,12 @@
 
 ADD_COHERENCE_TO_CMD_LINE(WriteThrough);
 
-void WriteThrough::PrRd(addr_t addr, cache_line* line) {
+void WriteThrough::PrRd(cache_line* line) {
     switch (line->state) {
     case V:
         break;
     case I:
-        cache.issueBusMsg(BusRead, addr);
+        cache.issueBusMsg(BusRead);
         line->state = V;
         break;
     default:
@@ -19,17 +19,17 @@ void WriteThrough::PrRd(addr_t addr, cache_line* line) {
     }
 }
 
-void WriteThrough::PrWr(addr_t addr, cache_line* line) {
+void WriteThrough::PrWr(cache_line* line) {
     if (line) switch (line->state) {
     case V:
     case I:
-        cache.issueBusMsg(BusWrite, addr);
+        cache.issueBusMsg(BusWrite);
         break;
     default:
         STATE_ERR;
         return;
     } else {
-        cache.issueBusMsg(BusWrite, addr);
+        cache.issueBusMsg(BusWrite);
     }
 }
 

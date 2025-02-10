@@ -41,9 +41,8 @@ public:
 
     /// @brief Issue a BusRd message to "neighboring caches"
     /// @param bus_msg The specific bus message
-    /// @param addr The address accessed
     /// @return True if the 'COPIES-EXIST' line was asserted
-    bool issueBusMsg(bus_msg_e bus_msg, addr_t addr);
+    bool issueBusMsg(bus_msg_e bus_msg);
 
     /// @brief Write the command format message to stderr
     void printCmdFormatMessage();

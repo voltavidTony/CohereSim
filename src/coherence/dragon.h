@@ -14,13 +14,11 @@ public:
     Dragon(CacheABC& cache) : CoherenceProtocol(cache) {}
 
     /// @brief Receive a PrRd message
-    /// @param addr The address accessed
     /// @param line The cache line accessed (non-null)
-    void PrRd(addr_t addr, cache_line* line);
+    void PrRd(cache_line* line);
     /// @brief Receive a PrWr message
-    /// @param addr The address accessed
     /// @param line The cache line accessed (non-null)
-    void PrWr(addr_t addr, cache_line* line);
+    void PrWr(cache_line* line);
 
     /// @brief Receive a BusRd message
     /// @param line The cache line accessed

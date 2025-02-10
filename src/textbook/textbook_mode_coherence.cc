@@ -88,7 +88,7 @@ bool TextbookModeCoherence::evalutateCommand(std::string& cmd) {
     return false;
 }
 
-bool TextbookModeCoherence::issueBusMsg(bus_msg_e bus_msg, addr_t addr) {
+bool TextbookModeCoherence::issueBusMsg(bus_msg_e bus_msg) {
     bus_events.emplace_back(bus_msg, command.issuer);
 
     bool copies = false;
@@ -185,7 +185,7 @@ void TextbookModeCoherence::receivePrRd(uint32_t cache_id) {
     }
 
     // Initiate the PrRd state change
-    coherence_protocol->PrRd(0, &lines[cache_id]);
+    coherence_protocol->PrRd(&lines[cache_id]);
 }
 void TextbookModeCoherence::receivePrWr(uint32_t cache_id) {
     // Start a processor write operation
@@ -207,7 +207,7 @@ void TextbookModeCoherence::receivePrWr(uint32_t cache_id) {
     }
 
     // Initiate the PrWr state change
-    coherence_protocol->PrWr(0, lines[cache_id].tag ? &lines[cache_id] : nullptr);
+    coherence_protocol->PrWr(lines[cache_id].tag ? &lines[cache_id] : nullptr);
 }
 
 void TextbookModeCoherence::reset() {

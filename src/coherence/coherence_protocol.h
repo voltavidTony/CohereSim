@@ -20,13 +20,11 @@ public:
     virtual ~CoherenceProtocol() {}
 
     /// @brief Receive a PrRd message
-    /// @param addr The address accessed
     /// @param line The cache line accessed (non-null)
-    virtual void PrRd(addr_t addr, cache_line* line) = 0;
+    virtual void PrRd(cache_line* line) = 0;
     /// @brief Receive a PrWr message
-    /// @param addr The address accessed
     /// @param line The cache line accessed
-    virtual void PrWr(addr_t addr, cache_line* line) = 0;
+    virtual void PrWr(cache_line* line) = 0;
 
     /// @brief Receive a BusRd message
     /// @param line The cache line accessed

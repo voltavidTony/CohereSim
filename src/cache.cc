@@ -6,8 +6,8 @@
 #include "memory_bus.h"
 #include "replacement_policy.h"
 
-Cache::Cache(MemoryBus& memory_bus, bool& flushed, uint32_t cache_id, cache_config& config) :
-    memory_bus(memory_bus), flushed(flushed), config(config), cache_id(cache_id) {
+Cache::Cache(MemoryBus& memory_bus, uint32_t cache_id, cache_config& config) :
+    memory_bus(memory_bus), config(config), cache_id(cache_id) {
     // Calculate cache dimensions
     uint32_t num_lines = config.cache_size / config.line_size;
     num_sets = num_lines / config.assoc;
@@ -83,31 +83,34 @@ void Cache::receivePrWr(addr_t addr) {
 }
 
 bool Cache::issueBusMsg(bus_msg_e bus_msg) {
+    // Reset shared signals (done here since this is the only method that reads the shared signals)
+    memory_bus.copies_exist = false;
+    memory_bus.flushed = false;
+
     // Send the bus message to each cache
-    bool copies;
     switch (bus_msg) {
     case BusRead:
     case BusReadX:
-        flushed = false;
-        copies = memory_bus.issueBusMsg(bus_msg, curr_access_addr, cache_id);
+        memory_bus.issueBusMsg(bus_msg, curr_access_addr, cache_id);
         // Figure out where the cache line was read from
-        statistics[flushed ? CacheToCache : LineFetch]++;
+        statistics[memory_bus.flushed ? CacheToCache : LineFetch]++;
         break;
     case BusUpdate:
     case BusUpgrade:
     case BusWrite:
-        copies = memory_bus.issueBusMsg(bus_msg, curr_access_addr, cache_id);
+        memory_bus.issueBusMsg(bus_msg, curr_access_addr, cache_id);
         break;
     default: // Only respond to actual bus messages (enum has other values)
         return false;
     }
     statistics[bus_msg]++;
-    return copies;
+    return memory_bus.copies_exist;
 }
-bool Cache::receiveBusMsg(bus_msg_e bus_msg, addr_t addr) {
+void Cache::receiveBusMsg(bus_msg_e bus_msg, addr_t addr) {
     // Find the accessed line
     cache_line* line = findLine(addr);
-    if (!line) return false;
+    if (!line) return;
+    memory_bus.copies_exist |= line->state;
 
     // Map bus_msg_e to the appropriate function call, keeping track of the line's state and if the line was flushed
     state_e prev_state = line->state;
@@ -118,39 +121,37 @@ bool Cache::receiveBusMsg(bus_msg_e bus_msg, addr_t addr) {
             if (!coherence_protocol->doesDirtySharing() && coherence_protocol->isWriteBackNeeded(prev_state))
                 statistics[WriteBack]++;
             statistics[LineFlush]++;
-            flushed = true;
+            memory_bus.flushed = true;
         }
         break;
     case BusReadX:
         if (coherence_protocol->BusRdX(line)) {
             statistics[LineFlush]++;
-            flushed = true;
+            memory_bus.flushed = true;
         }
         break;
     case BusUpdate:
         if (coherence_protocol->BusUpdt(line)) {
             statistics[LineFlush]++;
-            flushed = true;
+            memory_bus.flushed = true;
         }
         break;
     case BusUpgrade:
         if (coherence_protocol->BusUpgr(line)) {
             statistics[LineFlush]++;
-            flushed = true;
+            memory_bus.flushed = true;
         }
         break;
     case BusWrite:
         if (coherence_protocol->BusWr(line)) {
             statistics[LineFlush]++;
-            flushed = true;
+            memory_bus.flushed = true;
         }
         break;
     default: // Only respond to actual bus messages (enum has other values)
-        return false;
+        return;
     }
     stateChangeStatistic(prev_state, line->state);
-
-    return line->state;
 }
 
 state_e Cache::getLineState(uint32_t set_idx, uint32_t way_idx) {

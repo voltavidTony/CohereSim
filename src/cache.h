@@ -11,10 +11,9 @@ public:
 
     /// @brief Construct a new cache
     /// @param memory_bus The parent memory bus
-    /// @param flushed A reference to the memory bus' flushed flag
     /// @param cache_id The ID of this cache
     /// @param config The configuration of the parent memory bus
-    Cache(MemoryBus& memory_bus, bool& flushed, uint32_t cache_id, cache_config& config);
+    Cache(MemoryBus& memory_bus, uint32_t cache_id, cache_config& config);
     ~Cache();
 
     /// @brief Issue a PrRd message to this cache
@@ -31,8 +30,7 @@ public:
     /// @brief Issue a bus message to this cache
     /// @param bus_msg The specific bus message
     /// @param addr The address accessed
-    /// @return True if the bus transaction resulted in a hit
-    bool receiveBusMsg(bus_msg_e bus_msg, addr_t addr);
+    void receiveBusMsg(bus_msg_e bus_msg, addr_t addr);
 
     /// @brief Get the state of a line in the cache
     /// @param set_idx The index of the set containing the line
@@ -48,8 +46,6 @@ private:
 
     /// @brief Parent memory bus
     MemoryBus& memory_bus;
-    /// @brief Reference to memory bus flag indicating if a line was flushed
-    bool& flushed;
     /// @brief Config from the parent memory bus
     cache_config& config;
 

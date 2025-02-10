@@ -4,9 +4,8 @@
 #include "cache.h"
 #include "memory_bus.h"
 
-MemoryBus::MemoryBus(cache_config& config) : config(config) {
-    tag_offset = MSB(config.cache_size / config.assoc);
-}
+MemoryBus::MemoryBus(cache_config& config)
+    : copies_exist(false), flushed(false), caches{ 0 }, config(config) {}
 MemoryBus::~MemoryBus() {
     for (uint32_t i = 0; i < MAX_N_CACHES; i++)
         delete caches[i];
@@ -14,26 +13,23 @@ MemoryBus::~MemoryBus() {
 
 void MemoryBus::issuePrRd(addr_t addr, uint32_t cache_id) {
     // Dynamically allocate cache
-    if (!caches[cache_id]) caches[cache_id] = new Cache(*this, flushed, cache_id, config);
+    if (!caches[cache_id]) caches[cache_id] = new Cache(*this, cache_id, config);
 
-    flushed = false;
     caches[cache_id]->receivePrRd(addr);
 }
 
 void MemoryBus::issuePrWr(addr_t addr, uint32_t cache_id) {
     // Dynamically allocate cache
-    if (!caches[cache_id]) caches[cache_id] = new Cache(*this, flushed, cache_id, config);
+    if (!caches[cache_id]) caches[cache_id] = new Cache(*this, cache_id, config);
 
-    flushed = false;
     caches[cache_id]->receivePrWr(addr);
 }
 
-bool MemoryBus::issueBusMsg(bus_msg_e bus_msg, addr_t addr, uint32_t cache_id) {
-    bool copies_exist = false;
+void MemoryBus::issueBusMsg(bus_msg_e bus_msg, addr_t addr, uint32_t cache_id) {
     for (uint32_t i = 0; i < MAX_N_CACHES; i++)
         // The operation on copies_exist is bit-OR, so we can make use of short-circuit AND
-        copies_exist |= i != cache_id && caches[i] && caches[i]->receiveBusMsg(bus_msg, addr);
-    return copies_exist;
+        if (i != cache_id && caches[i])
+            caches[i]->receiveBusMsg(bus_msg, addr);
 }
 
 void MemoryBus::printStats() {

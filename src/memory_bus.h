@@ -12,6 +12,12 @@
 class MemoryBus {
 public:
 
+    /// @brief Flag to indicate if copies of a cache block exist in other caches
+    bool copies_exist;
+
+    /// @brief Flag to indicate if a cache flushed one of its lines
+    bool flushed;
+
     /// @brief Construct a new memory bus
     /// @param config The configuration of this memory bus
     MemoryBus(cache_config& config);
@@ -30,8 +36,7 @@ public:
     /// @param bus_msg The specific bus message
     /// @param addr The address accessed
     /// @param cache_id The cache ID of the requestor
-    /// @return True if the 'COPIES-EXIST' line was asserted
-    bool issueBusMsg(bus_msg_e bus_msg, addr_t addr, uint32_t cache_id);
+    void issueBusMsg(bus_msg_e bus_msg, addr_t addr, uint32_t cache_id);
 
     /// @brief Print simulation run statistics in CSV format (headerless)
     void printStats();
@@ -39,13 +44,8 @@ public:
 private:
 
     /// @brief Array of this memory bus's caches
-    Cache* caches[MAX_N_CACHES]{ 0 };
+    Cache* caches[MAX_N_CACHES];
 
     /// @brief Config for this memory bus
     cache_config config;
-
-    /// @brief Flag to indicate if a cache flushed one of its lines
-    bool flushed;
-
-    uint32_t tag_offset;
 };

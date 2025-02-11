@@ -38,6 +38,13 @@ public:
     /// @return The state of the cache line
     state_e getLineState(uint32_t set_idx, uint32_t way_idx);
 
+#ifdef WRITE_TIMESTAMP
+    /// @brief Get the access number of the most recent edit to a cache line
+    /// @param addr The address to ckeck
+    /// @return The timestamp of the cache line if the address is in the cache, otherwise 0
+    size_t getTimestamp(addr_t addr);
+#endif
+
     /// @brief Print simulation run statistics in CSV format (headerless)
     /// @note Does not produce output if the cache is unused
     void printStats();

@@ -161,6 +161,10 @@ struct cache_line {
     tag_t tag;
     /// @brief State the line is in
     state_e state;
+#ifdef WRITE_TIMESTAMP
+    /// @brief The timestamp of the last write to the cache line
+    size_t timestamp;
+#endif
 };
 
 /// @brief Configuration for the caches in an instance of MemoryBus

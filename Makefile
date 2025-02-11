@@ -10,7 +10,7 @@ CONFIGS_FILE = configs.txt
 RESULTS_FILE = results.csv
 
 # Compiler flag definition
-CPPFLAGS = -Wall -std=c++20 -g $(addprefix -I, $(VPATH))
+override CPPFLAGS += -Wall -std=c++20 -g $(addprefix -I, $(VPATH))
 
 # Incremental build
 all: $(BIN_FILE)

@@ -49,6 +49,10 @@ The provided make file in the root directory is used to build the cache simulato
 
 For more information on running the simulator and its modes of operation, see the [cache simulator manual](docs/pages/cache_sim.md).
 
+### Development
+
+For further development, a [development manual](docs/pages/development.md) is included in this documentation.
+
 ## Tool Suite
 
 ### Doxygen Documentation

@@ -12,6 +12,14 @@
 class MemoryBus {
 public:
 
+#ifdef WRITE_TIMESTAMP
+    /// @brief The access number of the current memory access
+    size_t access_timestamp;
+
+    /// @brief The most recent timestamp of a cache block across all caches
+    size_t most_recent_sibling;
+#endif
+
     /// @brief Flag to indicate if copies of a cache block exist in other caches
     bool copies_exist;
 
@@ -26,11 +34,25 @@ public:
     /// @brief Issue a PrWr message to a cache
     /// @param addr The address accessed
     /// @param cache_id The cache ID of the recipient
-    void issuePrRd(addr_t addr, uint32_t cache_id);
+#ifdef WRITE_TIMESTAMP
+    /// @param read_timestamp The access number of the current read access
+#endif
+    void issuePrRd(addr_t addr, uint32_t cache_id
+#ifdef WRITE_TIMESTAMP
+        , size_t read_timestamp
+#endif
+    );
     /// @brief Issue a PrRd message to a cache
     /// @param addr The address accessed
     /// @param cache_id The cache ID of the recipient
-    void issuePrWr(addr_t addr, uint32_t cache_id);
+#ifdef WRITE_TIMESTAMP
+    /// @param write_timestamp The access number of the current write access
+#endif
+    void issuePrWr(addr_t addr, uint32_t cache_id
+#ifdef WRITE_TIMESTAMP
+        , size_t write_timestamp
+#endif
+    );
 
     /// @brief Issue a bus message from a cache to all other caches
     /// @param bus_msg The specific bus message
@@ -48,4 +70,12 @@ private:
 
     /// @brief Config for this memory bus
     cache_config config;
+
+#ifdef WRITE_TIMESTAMP
+    /// @brief Check if all valid copies of a cache block have the same timestamp
+    /// @param addr The memory address in the cache block
+    /// @param write Whether the current operation is a processor write
+    /// @param current_timestamp The current access number
+    void verifyTimestamp(addr_t addr, bool write, size_t current_timestamp);
+#endif
 };

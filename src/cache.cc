@@ -45,8 +45,18 @@ void Cache::receivePrRd(addr_t addr) {
 
     // Initiate the PrRd state change
     state_e prev_state = line->state;
+#ifdef WRITE_TIMESTAMP
+    memory_bus.most_recent_sibling = 0;
+#endif
     coherence_protocol->PrRd(line);
     stateChangeStatistic(prev_state, line->state);
+#ifdef WRITE_TIMESTAMP
+    // Update timestamp on a read miss
+    if (!prev_state) {
+        if (memory_bus.copies_exist) line->timestamp = memory_bus.most_recent_sibling;
+        else line->timestamp = memory_bus.access_timestamp;
+    }
+#endif
 
     // Inform replacer of cache line access
     uint32_t line_idx = line - lines;
@@ -75,10 +85,15 @@ void Cache::receivePrWr(addr_t addr) {
     coherence_protocol->PrWr(line);
     if (line) stateChangeStatistic(prev_state, line->state);
 
-    // Inform replacer of cache line access
     if (line && line->state) {
+        // Inform replacer of cache line access
         uint32_t line_idx = line - lines;
         replacement_policy->touch(line_idx / config.assoc, line_idx % config.assoc);
+
+#ifdef WRITE_TIMESTAMP
+        // Update the cache line's timestamp
+        line->timestamp = memory_bus.access_timestamp;
+#endif
     }
 }
 
@@ -135,6 +150,11 @@ void Cache::receiveBusMsg(bus_msg_e bus_msg, addr_t addr) {
             statistics[LineFlush]++;
             memory_bus.flushed = true;
         }
+#ifdef WRITE_TIMESTAMP
+        // BusUpdate is the only bus message that distribues a write,
+        // so it is the only bus message that sets the timestamp
+        line->timestamp = memory_bus.access_timestamp;
+#endif
         break;
     case BusUpgrade:
         if (coherence_protocol->BusUpgr(line)) {
@@ -152,11 +172,25 @@ void Cache::receiveBusMsg(bus_msg_e bus_msg, addr_t addr) {
         return;
     }
     stateChangeStatistic(prev_state, line->state);
+
+#ifdef WRITE_TIMESTAMP
+    // Determine most recent timestamp across siblings
+    if (memory_bus.most_recent_sibling < line->timestamp)
+        memory_bus.most_recent_sibling = line->timestamp;
+#endif
 }
 
 state_e Cache::getLineState(uint32_t set_idx, uint32_t way_idx) {
     return lines[set_idx * config.assoc + way_idx].state;
 }
+
+#ifdef WRITE_TIMESTAMP
+size_t Cache::getTimestamp(addr_t addr) {
+    cache_line* line = findLine(addr);
+    if (line && line->state) return line->timestamp;
+    return 0;
+}
+#endif
 
 void Cache::printStats() {
     if (statistics[ProcRead] + statistics[ProcWrite]) {

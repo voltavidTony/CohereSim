@@ -51,8 +51,16 @@ void runBatchMetrics(int argc, char* argv[]) {
             for (uint32_t i = 0; i < trace_count; i++) {
                 uint8_t op = trace_buf[i].op;
                 addr_t addr = trace_buf[i].addr;
-                if (op & 1) memory_bus.issuePrWr(le32toh(addr), op >> 1);
-                else memory_bus.issuePrRd(le32toh(addr), op >> 1);
+                if (op & 1) memory_bus.issuePrWr(le32toh(addr), op >> 1
+#ifdef WRITE_TIMESTAMP
+                    , line_count
+#endif
+                );
+                else memory_bus.issuePrRd(le32toh(addr), op >> 1
+#ifdef WRITE_TIMESTAMP
+                    , line_count
+#endif
+                );
                 line_count++;
 
                 // Exit the while loop if trace limit is reached
@@ -115,8 +123,16 @@ void runSingleMetrics(int argc, char* argv[]) {
     for (size_t line_count = 0; !(trace_file.eof() || (trace_limit && line_count == trace_limit)); line_count++) {
         trace_file.read((char*)&op, sizeof(op));
         trace_file.read((char*)&addr, sizeof(addr));
-        if (op & 1) memory_bus.issuePrWr(le32toh(addr), op >> 1);
-        else memory_bus.issuePrRd(le32toh(addr), op >> 1);
+        if (op & 1) memory_bus.issuePrWr(le32toh(addr), op >> 1
+#ifdef WRITE_TIMESTAMP
+            , line_count
+#endif
+        );
+        else memory_bus.issuePrRd(le32toh(addr), op >> 1
+#ifdef WRITE_TIMESTAMP
+            , line_count
+#endif
+        );
     }
 
     // Print statistics

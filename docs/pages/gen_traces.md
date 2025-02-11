@@ -1,4 +1,4 @@
-# Trace file generation
+# Trace File Generation
 
 [TOC]
 
@@ -8,7 +8,7 @@
 2. `libs` and `tools` packages are not runnable. Probably since they are libraries or tools.
 3. The group `netapps` work initially, but after a few seconds subsequent runs of `netapps` inexplicably hang indefinitely. There are three benchmarks under that category, and each of them individually hang indefinitely. After a system restart they work again.
 
-## Setup instructions
+## Setup Instructions
 
 ### 1 Install Ubuntu on WSL2 (skip if your computer is running Linux)
 
@@ -61,7 +61,7 @@ From within the `parsec-benchmark` directory:
    - If a certain package is missing, chances are the correct package to install is `lib{package}-dev`
 4. Test if the benchmark suite functions with the (default) test inputs: `./bin/parsecmgmt -a run -p all`
 
-## Run the trace generation script
+## Trace Generation Script
 
 Note:: This script uses the `fast` variant of gem5. It is located in the `tools` directory, but can be run from anywhere.
 

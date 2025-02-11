@@ -1,4 +1,4 @@
-# Bus-based L1 cache simulator suite
+# Bus-based L1 Cache Simulator Suite
 
 [TOC]
 
@@ -29,7 +29,7 @@ A copy of this documentation is hosted on [my GitHub Pages](https://voltavidtony
 - Compressed Trace Files
 - More Protocols and Policies
 
-## Cache simulator
+## Cache Simulator
 
 ### Installation
 
@@ -51,17 +51,17 @@ For more information on running the simulator and its modes of operation, see th
 
 ## Tool Suite
 
-### Doxygen documentation
+### Doxygen Documentation
 
 The codebase and tool suite are documented using Doxygen style comments. As such, the Doxyfile is provided at the root directory and configured to generate HTML documentation of this software suite. To generate this documentation, simply issue `doxygen` on the command line in the same directory as this file. The resulting documentation will be available at `docs/html/index.html`.
 
-### Template file generation
+### Template File Generation
 
 The simulator was built to be extended, and thus template files and a template generator script are provided to automate the boilerplate code.
 
 See the [template file generation guide](docs/pages/templates.md) to learn how to create new source files using the provided templates.
 
-### Trace file generation
+### Trace File Generation
 
 The cache simulator reads in memory trace files to simulate cache behavior and record statistics. These are binary files comprised of a series of 5-byte memory accesses. Each memory access is structured as follows:
 

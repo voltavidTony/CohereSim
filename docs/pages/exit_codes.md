@@ -1,15 +1,17 @@
-# Exit codes
+# Exit Codes
+
+[TOC]
 
 The exit code provides an indicator as to which exact argument has caused an error. This value may seem redundant as this information is also printed to `stderr`, but it's purpose is to make programmatic interaction with the simulator (scripting) easier.
 
-### Specific values
+### Specific Values
 
 - `-1` (`255` in Linux): The number of arguments passed does not match any valid argument list
 - `0`: The program has executed normally
 - `1-8`: The nth argument on the command line is invalid
 - Any other value falls under the general format category
 
-### General format
+### General Format
 
 The general format is used when running the program in batch metrics mode, that is, a file containing multiple cache configurations was specified. It is comprised of two bit fields:
 - The lower 3 bits deterimine the index of the offending argument

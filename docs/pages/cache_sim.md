@@ -55,7 +55,7 @@ The single command line argument is the name of the policy/protocol to showcase 
 - `W<n>`: Write access on cache line `n`
 - `X`: Reset all internal state and start a new table
 
-**Replacement Policy**
+**Replacement Policy:**
 
 - `<tag>`: Access line with a tag of `tag`. Only letters A-Z are allowed as the tag
 - `-`: Reset all internal state and start a new table

@@ -18,9 +18,6 @@
 #error("N_TEXTBOOK_LINES must be a single digit number")
 #endif
 
-/// @brief Determine the position of the MSB (for int32, a range of 0-31)
-#define MSB(x) (8 * sizeof(x) - 1 - __builtin_clz(x))
-
 /// @brief Cache class
 class Cache;
 /// @brief Cache abstract base class
@@ -192,13 +189,15 @@ struct ci_less {
     bool operator() (const std::string& s1, const std::string& s2) const;
 };
 
+#pragma pack(push, 1)
 /// @brief The format of a single trace
 struct trace_t {
     /// @brief The first byte of a trace; the 7-bit CPU ID combined with the 1-bit R/W mode
     uint8_t op;
     /// @brief The address that is accessed
     addr_t addr;
-} __attribute__((packed));
+};
+#pragma pack(pop)
 
 /// @brief A map from coherence protocol names to their factory functions
 extern std::map<std::string, coh_factory_t, ci_less>* coherence_map;

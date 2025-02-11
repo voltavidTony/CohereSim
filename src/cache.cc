@@ -1,6 +1,8 @@
 /// @file cache.cc
 /// @brief Definition of the Cache class methods
 
+#include <cmath>
+
 #include "cache.h"
 #include "coherence_protocol.h"
 #include "memory_bus.h"
@@ -11,8 +13,10 @@ Cache::Cache(MemoryBus& memory_bus, uint32_t cache_id, cache_config& config) :
     // Calculate cache dimensions
     uint32_t num_lines = config.cache_size / config.line_size;
     num_sets = num_lines / config.assoc;
-    line_offset = MSB(config.line_size);
-    tag_offset = MSB(config.cache_size / config.assoc);
+    // The logarithm of an integer tells the position of its most significant digit
+    // (Use float version since rounding errors are irrelevant)
+    line_offset = std::log2f(config.line_size);
+    tag_offset = std::log2f(config.cache_size / config.assoc);
 
     // Initialize cache components
     coherence_protocol = (*coherence_map)[config.coherence](*this);

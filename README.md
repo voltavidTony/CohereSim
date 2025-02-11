@@ -15,6 +15,7 @@
 | 3.0 | Anthony Spendlove | Complete rewrite for Spring 2025 |
 | 3.1 | Anthony Spendlove | Add batch mode (parallel execution) |
 | 3.1.1 | Anthony Spendlove | Trace file chunks are "double buffered" in batch mode |
+| 3.2 | Anthony Spendlove | Added write timestamp debugging feature, consistency refactorings, bugfixes, portability and cross-platform edits |
 
 (Version history begins with v3.0)
 
@@ -25,7 +26,6 @@ A copy of this documentation is hosted on [my GitHub Pages](https://voltavidtony
 ## Roadmap
 
 - Implement Directory Protocols
-- Cross-Platform Support
 - Compressed Trace Files
 - More Protocols and Policies
 

@@ -16,11 +16,12 @@ The simulator does not process input from `stdin` in these two modes.
 
 In this mode, a single cache configuration is specified on the command line. Consequently, the value of the `config` field in the output is always 0, which indicates the command line as the source.
 
-The command line arguments are `<cache_size[unit]> <line_size> <associativity> <coherence> <replacer> <trace_file> [trace_limit]`
+The command line arguments are `<cache_size[unit]> <line_size> <associativity> <coherence> <replacer> <directory> <trace_file> [trace_limit]`
 
 - `associativity`: The number of ways in the cache. In other words, the number of cache lines in a set.
 - `cache_size`: The size of the cache in bytes. Optionally, 'k' or 'M' can be specified as the `unit`. For instance, one can specify '128k' instead of '131072'.
 - `coherence`: The name of the coherence protocol the cache should implement (not case sensitive)
+- `directory`: The name of the cirectory protocol the cache should implement (not case sensitive)
 - `line_size`: The size of a single cache line in bytes.
 - `replacer`: The name of the replacement policy the cache should implement (not case sensitive)
 - `trace_file`: The [trace file](docs/pages/templates.md) that the simulator should read in
@@ -30,7 +31,7 @@ Note:: Every cache dimension must be a power of 2. Any other value is rejected b
 
 ### Batch
 
-This mode of operation is designed to accelerate the production of the runtime metrics by reading a [trace file](docs/pages/templates.md) once, but processing it across multiple cache configurations in parallel. As such, the value of the `config` field in the output indicates which line of the configs file was the source for the configuration that the accompanying statistics are for. The cache configurations are specified in a configs file, where each line is one instance of the first 5 command line arguments for 'Single Metric' mode, `cache_size[unit]`, `line_size`, `associativity`, `coherence`, and `replacer`.
+This mode of operation is designed to accelerate the production of the runtime metrics by reading a [trace file](docs/pages/templates.md) once, but processing it across multiple cache configurations in parallel. As such, the value of the `config` field in the output indicates which line of the configs file was the source for the configuration that the accompanying statistics are for. The cache configurations are specified in a configs file, where each line is one instance of the first 6 command line arguments for 'Single Metric' mode, `cache_size[unit]`, `line_size`, `associativity`, `coherence`, `replacer`, and `directory`.
 
 Note:: Due to each configuration processing the trace file in parallel, the order of configurations in the output is arbitrary. A single configuration's output, however, is guaranteed to be contiguous.
 

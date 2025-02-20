@@ -4,7 +4,7 @@
 if [ $# -eq 0 ]; then
   echo "Usage:"
   echo "  ./mksrc.sh coherence <class_name> <states..>"
-  echo "  ./mksrc.sh replacement|textbook <class_name>"
+  echo "  ./mksrc.sh directory|replacement|textbook <class_name>"
   echo "  ./mksrc.sh <file_name>"
   echo "Options:"
   echo "  class_name: The name of the new policy/protocol (TitleCase)"
@@ -46,6 +46,9 @@ if [ $# -gt 1 ]; then
   # Template option specific values
   states=""
   case $1 in
+    "directory")
+      ;;
+
     "replacement")
       ;;
 

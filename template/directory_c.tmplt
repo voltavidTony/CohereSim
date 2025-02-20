@@ -1,0 +1,9 @@
+/// @file __FILE__.cc
+/// @brief Implementation of the __CLASS__ directory protocol
+
+#include "__FILE__.h"
+#include "cache.h"
+
+ADD_DIRECTORY_TO_CMD_LINE(__CLASS__);
+
+void __CLASS__::issueBusMsg(bus_msg_e bus_msg, addr_t addr, uint32_t cache_id) {}

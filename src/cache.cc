@@ -5,11 +5,11 @@
 
 #include "cache.h"
 #include "coherence_protocol.h"
-#include "memory_bus.h"
+#include "memory_system.h"
 #include "replacement_policy.h"
 
-Cache::Cache(MemoryBus& memory_bus, uint32_t cache_id, cache_config& config) :
-    memory_bus(memory_bus), config(config), cache_id(cache_id) {
+Cache::Cache(MemorySystem& memory_system, uint32_t cache_id, cache_config& config) :
+    memory_system(memory_system), config(config), cache_id(cache_id) {
     // Calculate cache dimensions
     uint32_t num_lines = config.cache_size / config.line_size;
     num_sets = num_lines / config.assoc;
@@ -50,15 +50,15 @@ void Cache::receivePrRd(addr_t addr) {
     // Initiate the PrRd state change
     state_e prev_state = line->state;
 #ifdef WRITE_TIMESTAMP
-    memory_bus.most_recent_sibling = 0;
+    memory_system.most_recent_sibling = 0;
 #endif
     coherence_protocol->PrRd(line);
     stateChangeStatistic(prev_state, line->state);
 #ifdef WRITE_TIMESTAMP
     // Update timestamp on a read miss
     if (!prev_state) {
-        if (memory_bus.copies_exist) line->timestamp = memory_bus.most_recent_sibling;
-        else line->timestamp = memory_bus.access_timestamp;
+        if (memory_system.copies_exist) line->timestamp = memory_system.most_recent_sibling;
+        else line->timestamp = memory_system.access_timestamp;
     }
 #endif
 
@@ -96,40 +96,40 @@ void Cache::receivePrWr(addr_t addr) {
 
 #ifdef WRITE_TIMESTAMP
         // Update the cache line's timestamp
-        line->timestamp = memory_bus.access_timestamp;
+        line->timestamp = memory_system.access_timestamp;
 #endif
     }
 }
 
 bool Cache::issueBusMsg(bus_msg_e bus_msg) {
     // Reset shared signals (done here since this is the only method that reads the shared signals)
-    memory_bus.copies_exist = false;
-    memory_bus.flushed = false;
+    memory_system.copies_exist = false;
+    memory_system.flushed = false;
 
     // Send the bus message to each cache
     switch (bus_msg) {
     case BusRead:
     case BusReadX:
-        memory_bus.issueBusMsg(bus_msg, curr_access_addr, cache_id);
+        memory_system.issueBusMsg(bus_msg, curr_access_addr, cache_id);
         // Figure out where the cache line was read from
-        statistics[memory_bus.flushed ? CacheToCache : LineFetch]++;
+        statistics[memory_system.flushed ? CacheToCache : LineFetch]++;
         break;
     case BusUpdate:
     case BusUpgrade:
     case BusWrite:
-        memory_bus.issueBusMsg(bus_msg, curr_access_addr, cache_id);
+        memory_system.issueBusMsg(bus_msg, curr_access_addr, cache_id);
         break;
     default: // Only respond to actual bus messages (enum has other values)
         return false;
     }
     statistics[bus_msg]++;
-    return memory_bus.copies_exist;
+    return memory_system.copies_exist;
 }
 void Cache::receiveBusMsg(bus_msg_e bus_msg, addr_t addr) {
     // Find the accessed line
     cache_line* line = findLine(addr);
     if (!line) return;
-    memory_bus.copies_exist |= line->state;
+    memory_system.copies_exist |= line->state;
 
     // Map bus_msg_e to the appropriate function call, keeping track of the line's state and if the line was flushed
     state_e prev_state = line->state;
@@ -140,36 +140,36 @@ void Cache::receiveBusMsg(bus_msg_e bus_msg, addr_t addr) {
             if (!coherence_protocol->doesDirtySharing() && coherence_protocol->isWriteBackNeeded(prev_state))
                 statistics[WriteBack]++;
             statistics[LineFlush]++;
-            memory_bus.flushed = true;
+            memory_system.flushed = true;
         }
         break;
     case BusReadX:
         if (coherence_protocol->BusRdX(line)) {
             statistics[LineFlush]++;
-            memory_bus.flushed = true;
+            memory_system.flushed = true;
         }
         break;
     case BusUpdate:
         if (coherence_protocol->BusUpdt(line)) {
             statistics[LineFlush]++;
-            memory_bus.flushed = true;
+            memory_system.flushed = true;
         }
 #ifdef WRITE_TIMESTAMP
         // BusUpdate is the only bus message that distribues a write,
         // so it is the only bus message that sets the timestamp
-        line->timestamp = memory_bus.access_timestamp;
+        line->timestamp = memory_system.access_timestamp;
 #endif
         break;
     case BusUpgrade:
         if (coherence_protocol->BusUpgr(line)) {
             statistics[LineFlush]++;
-            memory_bus.flushed = true;
+            memory_system.flushed = true;
         }
         break;
     case BusWrite:
         if (coherence_protocol->BusWr(line)) {
             statistics[LineFlush]++;
-            memory_bus.flushed = true;
+            memory_system.flushed = true;
         }
         break;
     default: // Only respond to actual bus messages (enum has other values)
@@ -179,8 +179,8 @@ void Cache::receiveBusMsg(bus_msg_e bus_msg, addr_t addr) {
 
 #ifdef WRITE_TIMESTAMP
     // Determine most recent timestamp across siblings
-    if (memory_bus.most_recent_sibling < line->timestamp)
-        memory_bus.most_recent_sibling = line->timestamp;
+    if (memory_system.most_recent_sibling < line->timestamp)
+        memory_system.most_recent_sibling = line->timestamp;
 #endif
 }
 

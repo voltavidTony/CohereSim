@@ -1,0 +1,21 @@
+/// @file __FILE__.h
+/// @brief Declaration of the __CLASS__ directory protocol
+
+#pragma once
+
+#include "memory_system.h"
+
+/// @brief The __CLASS__ directory protocol
+class __CLASS__ : public MemorySystem {
+public:
+
+    /// @brief Construct a new __CLASS__ directory protocol
+    /// @param config The configuration of the memory system
+    __CLASS__(cache_config& config) : MemorySystem(config) {}
+
+    /// @brief Issue a bus message from a cache to all other caches
+    /// @param bus_msg The specific bus message
+    /// @param addr The address accessed
+    /// @param cache_id The cache ID of the requestor
+    void issueBusMsg(bus_msg_e bus_msg, addr_t addr, uint32_t cache_id);
+};

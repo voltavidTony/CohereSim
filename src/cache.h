@@ -10,10 +10,10 @@ class Cache : public CacheABC {
 public:
 
     /// @brief Construct a new cache
-    /// @param memory_bus The parent memory bus
+    /// @param memory_system The parent memory system
     /// @param cache_id The ID of this cache
-    /// @param config The configuration of the parent memory bus
-    Cache(MemoryBus& memory_bus, uint32_t cache_id, cache_config& config);
+    /// @param config The configuration of the parent memory system
+    Cache(MemorySystem& memory_system, uint32_t cache_id, cache_config& config);
     ~Cache();
 
     /// @brief Issue a PrRd message to this cache
@@ -51,9 +51,9 @@ public:
 
 private:
 
-    /// @brief Parent memory bus
-    MemoryBus& memory_bus;
-    /// @brief Config from the parent memory bus
+    /// @brief Parent memory system
+    MemorySystem& memory_system;
+    /// @brief Config from the parent memory system
     cache_config& config;
 
     /// @brief Coherence protocol used by this cache

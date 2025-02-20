@@ -1,17 +1,17 @@
-/// @file memory_bus.cc
-/// @brief Implementation of the MemoryBus class methods
+/// @file memory_system.cc
+/// @brief Implementation of the MemorySystem class methods
 
 #include "cache.h"
-#include "memory_bus.h"
+#include "memory_system.h"
 
-MemoryBus::MemoryBus(cache_config& config)
+MemorySystem::MemorySystem(cache_config& config)
     : copies_exist(false), flushed(false), caches{ 0 }, config(config) {}
-MemoryBus::~MemoryBus() {
+MemorySystem::~MemorySystem() {
     for (uint32_t i = 0; i < MAX_N_CACHES; i++)
         delete caches[i];
 }
 
-void MemoryBus::issuePrRd(addr_t addr, uint32_t cache_id
+void MemorySystem::issuePrRd(addr_t addr, uint32_t cache_id
 #ifdef WRITE_TIMESTAMP
     , size_t read_timestamp
 #endif
@@ -28,7 +28,7 @@ void MemoryBus::issuePrRd(addr_t addr, uint32_t cache_id
 #endif
 }
 
-void MemoryBus::issuePrWr(addr_t addr, uint32_t cache_id
+void MemorySystem::issuePrWr(addr_t addr, uint32_t cache_id
 #ifdef WRITE_TIMESTAMP
     , size_t write_timestamp
 #endif
@@ -45,21 +45,14 @@ void MemoryBus::issuePrWr(addr_t addr, uint32_t cache_id
 #endif
 }
 
-void MemoryBus::issueBusMsg(bus_msg_e bus_msg, addr_t addr, uint32_t cache_id) {
-    for (uint32_t i = 0; i < MAX_N_CACHES; i++)
-        // The operation on copies_exist is bit-OR, so we can make use of short-circuit AND
-        if (i != cache_id && caches[i])
-            caches[i]->receiveBusMsg(bus_msg, addr);
-}
-
-void MemoryBus::printStats() {
+void MemorySystem::printStats() {
     for (uint32_t i = 0; i < MAX_N_CACHES; i++)
         if (caches[i])
             caches[i]->printStats();
 }
 
 #ifdef WRITE_TIMESTAMP
-void MemoryBus::verifyTimestamp(addr_t addr, bool write, size_t current_timestamp) {
+void MemorySystem::verifyTimestamp(addr_t addr, bool write, size_t current_timestamp) {
     // Collect each cache's timestamps for the accessed address
     size_t timestamps[MAX_N_CACHES];
     for (uint32_t i = 0; i < MAX_N_CACHES; i++)

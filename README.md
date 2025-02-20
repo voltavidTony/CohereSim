@@ -4,6 +4,8 @@
 
 ## About
 
+The cache simulator is aimed at providing runtime metrics of a DSM processor to enhance education in computer architecture, wherein it enables students to compare a variety of caches and draw conclusions about the impact of the cache size, line size, associativity, coherence protocol and replacement policy.
+
 - Course: NC State University CSC/ECE 506
 - Instructor: Ed Gehringer
 - Email: efg@ncsu.edu
@@ -16,6 +18,7 @@
 | 3.1 | Anthony Spendlove | Add batch mode (parallel execution) |
 | 3.1.1 | Anthony Spendlove | Trace file chunks are "double buffered" in batch mode |
 | 3.2 | Anthony Spendlove | Added write timestamp debugging feature, consistency refactorings, bugfixes, portability and cross-platform edits |
+| 3.3 | Anthony Spendlove | Added directory protocol program structure |
 
 (Version history begins with v3.0)
 
@@ -86,6 +89,7 @@ See the [trace file generation guide](docs/pages/gen_traces.md) to learn how to 
 | | 🗁 html/ || Generated HTML documentation |
 | | 📂 pages/ || Custom documentation pages |
 | | | 📄 cache_sim.md | Cache simulator operation manual |
+| | | 📄 development.md | Developer manual |
 | | | 📄 exit_codes.md | Cache simulator exit code explanation |
 | | | 📄 gen_traces.md | Trace file generation manual |
 | | | 📄 templates.md | Template file generation manual |
@@ -94,6 +98,8 @@ See the [trace file generation guide](docs/pages/gen_traces.md) to learn how to 
 | 📂 template/ ||| Template files & generator script |
 | | 📄 coherence_c.tmplt || Coherence protocol source file template |
 | | 📄 coherence_h.tmplt || Coherence protocol header file template |
+| | 📄 directory_c.tmplt || Directory protocol source file template |
+| | 📄 directory_h.tmplt || Directory protocol header file template |
 | | 📜 mksrc.sh || Source file generator script |
 | | 📄 replacement_c.tmplt || Replacement policy source file template |
 | | 📄 replacement_h.tmplt || Replacement policy header file template |

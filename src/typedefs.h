@@ -24,8 +24,8 @@ class Cache;
 class CacheABC;
 /// @brief Coherence protocol base class
 class CoherenceProtocol;
-/// @brief Memory bus class
-class MemoryBus;
+/// @brief MemorySystem class
+class MemorySystem;
 /// @brief Replacement policy base class
 class ReplacementPolicy;
 
@@ -37,6 +37,7 @@ enum args_single_e {
     ARG_ASSOCIATIVITY,
     ARG_COHERENCE,
     ARG_REPLACEMENT,
+    ARG_DIRECTORY,
     ARG_C_COUNT,
     ARG_S_TRACE_FILE = ARG_C_COUNT,
     ARG_S_TRACE_LIMIT,
@@ -147,11 +148,6 @@ typedef uint32_t addr_t;
 /// @brief Cache line tag
 typedef uint32_t tag_t;
 
-/// @brief Coherence protocol factory function signature
-typedef std::function<CoherenceProtocol* (CacheABC&)> coh_factory_t;
-/// @brief Replacement policy factory function signature
-typedef std::function<ReplacementPolicy* (CacheABC&, uint32_t, uint32_t)> rep_factory_t;
-
 /// @brief Cache line fields (without data field)
 struct cache_line {
     /// @brief Tag of the line
@@ -164,7 +160,7 @@ struct cache_line {
 #endif
 };
 
-/// @brief Configuration for the caches in an instance of MemoryBus
+/// @brief Configuration for an individual memory system
 struct cache_config {
     /// @brief The id for this configuration
     uint32_t id;
@@ -176,6 +172,8 @@ struct cache_config {
     uint32_t assoc;
     /// @brief The name of the coherence protocol
     std::string coherence;
+    /// @brief The name of the directory protocol
+    std::string directory;
     /// @brief The name of the replacement policy
     std::string replacer;
 };
@@ -199,7 +197,16 @@ struct trace_t {
 };
 #pragma pack(pop)
 
+/// @brief Coherence protocol factory function signature
+typedef std::function<CoherenceProtocol* (CacheABC&)> coh_factory_t;
+/// @brief Directory protocol factory function signature
+typedef std::function<MemorySystem* (cache_config&)> dir_factory_t;
+/// @brief Replacement policy factory function signature
+typedef std::function<ReplacementPolicy* (CacheABC&, uint32_t, uint32_t)> rep_factory_t;
+
 /// @brief A map from coherence protocol names to their factory functions
 extern std::map<std::string, coh_factory_t, ci_less>* coherence_map;
+/// @brief A map from directory protocol names to their factory functions
+extern std::map<std::string, dir_factory_t, ci_less>* directory_map;
 /// @brief A map from replacement policy names to their factory functions
 extern std::map<std::string, rep_factory_t, ci_less>* replacement_map;

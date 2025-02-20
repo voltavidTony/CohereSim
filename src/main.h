@@ -5,7 +5,7 @@
 
 #include "typedefs.h"
 
-/// @brief Parse the given arguments into a memory bus configuration
+/// @brief Parse the given arguments into a memory system configuration
 /// @param argc The number of program arguments
 /// @param argv The array of program arguments
 /// @param config The configuration struct to populate

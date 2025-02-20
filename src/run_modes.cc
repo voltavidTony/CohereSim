@@ -8,7 +8,7 @@
 #include <thread>
 
 #include "main.h"
-#include "memory_bus.h"
+#include "memory_system.h"
 #include "textbook_mode_coherence.h"
 #include "textbook_mode_replacer.h"
 
@@ -40,8 +40,8 @@ void runBatchMetrics(int argc, char* argv[]) {
 
     // Set up worker threads
     auto batch_metrics_task = [&](cache_config config) {
-        // Create memory bus
-        MemoryBus memory_bus(config);
+        // Create memory system
+        MemorySystem* memory_system = (*directory_map)[config.directory](config);
 
         // Process each block as it arrives
         size_t line_count = 0;
@@ -51,12 +51,12 @@ void runBatchMetrics(int argc, char* argv[]) {
             for (uint32_t i = 0; i < trace_count; i++) {
                 uint8_t op = trace_buf[i].op;
                 addr_t addr = trace_buf[i].addr;
-                if (op & 1) memory_bus.issuePrWr(le32toh(addr), op >> 1
+                if (op & 1) memory_system->issuePrWr(le32toh(addr), op >> 1
 #ifdef WRITE_TIMESTAMP
                     , line_count
 #endif
                 );
-                else memory_bus.issuePrRd(le32toh(addr), op >> 1
+                else memory_system->issuePrRd(le32toh(addr), op >> 1
 #ifdef WRITE_TIMESTAMP
                     , line_count
 #endif
@@ -74,7 +74,7 @@ void runBatchMetrics(int argc, char* argv[]) {
         // Print statistics (Note the mutex is automatically released as part of the implicit destructor call)
     print_stats:
         std::lock_guard guard(stats_print_mutex);
-        memory_bus.printStats();
+        memory_system->printStats();
         };
     std::vector<std::thread> workers;
     workers.reserve(configs.size());
@@ -114,8 +114,8 @@ void runSingleMetrics(int argc, char* argv[]) {
     std::ifstream trace_file;
     size_t trace_limit = getTrace(argc, argv, trace_file, ARG_S_COUNT);
 
-    // Create memory bus
-    MemoryBus memory_bus(config);
+    // Create memory system
+    MemorySystem* memory_system = (*directory_map)[config.directory](config);
 
     // Execute traces
     addr_t addr;
@@ -123,12 +123,12 @@ void runSingleMetrics(int argc, char* argv[]) {
     for (size_t line_count = 0; !(trace_file.eof() || (trace_limit && line_count == trace_limit)); line_count++) {
         trace_file.read((char*)&op, sizeof(op));
         trace_file.read((char*)&addr, sizeof(addr));
-        if (op & 1) memory_bus.issuePrWr(le32toh(addr), op >> 1
+        if (op & 1) memory_system->issuePrWr(le32toh(addr), op >> 1
 #ifdef WRITE_TIMESTAMP
             , line_count
 #endif
         );
-        else memory_bus.issuePrRd(le32toh(addr), op >> 1
+        else memory_system->issuePrRd(le32toh(addr), op >> 1
 #ifdef WRITE_TIMESTAMP
             , line_count
 #endif
@@ -137,7 +137,7 @@ void runSingleMetrics(int argc, char* argv[]) {
 
     // Print statistics
     printStatsHeader();
-    memory_bus.printStats();
+    memory_system->printStats();
 }
 
 void runTextbookMode(char* name_of_showcased) {

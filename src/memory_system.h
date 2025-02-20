@@ -1,5 +1,5 @@
-/// @file memory_bus.h
-/// @brief Declaration of the MemoryBus class
+/// @file memory_system.h
+/// @brief Declaration of the MemorySystem class
 
 #pragma once
 
@@ -8,8 +8,8 @@
 /// @brief The maximum number of caches supported by the current trace format (7 bit ID = 128 ID values)
 #define MAX_N_CACHES 0b10000000
 
-/// @brief The MemoryBus class connecting multiple caches and main memory
-class MemoryBus {
+/// @brief The MemorySystem class connecting multiple caches and main memory
+class MemorySystem {
 public:
 
 #ifdef WRITE_TIMESTAMP
@@ -26,10 +26,10 @@ public:
     /// @brief Flag to indicate if a cache flushed one of its lines
     bool flushed;
 
-    /// @brief Construct a new memory bus
-    /// @param config The configuration of this memory bus
-    MemoryBus(cache_config& config);
-    ~MemoryBus();
+    /// @brief Construct a new memory system
+    /// @param config The configuration of this memory system
+    MemorySystem(cache_config& config);
+    virtual ~MemorySystem();
 
     /// @brief Issue a PrWr message to a cache
     /// @param addr The address accessed
@@ -58,17 +58,19 @@ public:
     /// @param bus_msg The specific bus message
     /// @param addr The address accessed
     /// @param cache_id The cache ID of the requestor
-    void issueBusMsg(bus_msg_e bus_msg, addr_t addr, uint32_t cache_id);
+    virtual void issueBusMsg(bus_msg_e bus_msg, addr_t addr, uint32_t cache_id) = 0;
 
     /// @brief Print simulation run statistics in CSV format (headerless)
     void printStats();
 
-private:
+protected:
 
-    /// @brief Array of this memory bus's caches
+    /// @brief Array of this memory system's caches
     Cache* caches[MAX_N_CACHES];
 
-    /// @brief Config for this memory bus
+private:
+
+    /// @brief Config for this memory system
     cache_config config;
 
 #ifdef WRITE_TIMESTAMP
@@ -79,3 +81,9 @@ private:
     void verifyTimestamp(addr_t addr, bool write, size_t current_timestamp);
 #endif
 };
+
+/// @brief Create a mapping in 'directory_map' from a string containing the class name to a factory method for the class
+/// @param dir_prot The directory protocol type
+#define ADD_DIRECTORY_TO_CMD_LINE(dir_prot) static int register_directory = []() { \
+if (directory_map == nullptr) directory_map = new std::map<std::string, dir_factory_t, ci_less>(); \
+(*directory_map)[#dir_prot] = [](cache_config& config) { return new dir_prot(config); }; return 0; }()

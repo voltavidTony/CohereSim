@@ -17,6 +17,7 @@
 #define CONFIG_LINE_SIZE (ARG_C_COUNT * 10)
 
 std::map<std::string, coh_factory_t, ci_less>* coherence_map = nullptr;
+std::map<std::string, dir_factory_t, ci_less>* directory_map = nullptr;
 std::map<std::string, rep_factory_t, ci_less>* replacement_map = nullptr;
 
 /// @brief CSV-friendly names for cache runtime statistics. Make sure these match up with 'bus_msg_e' and 'statistic_e'
@@ -81,6 +82,10 @@ void getConfig(int argc, char* argv[], cache_config& config) {
     // Replacement policy
     exitIf(!replacement_map->count(argv[ARG_REPLACEMENT]), "Replacement policy not found", config.id, ARG_REPLACEMENT);
     config.replacer = argv[ARG_REPLACEMENT];
+
+    // Directory protocol
+    exitIf(!directory_map->count(argv[ARG_DIRECTORY]), "Directory protocol not found", config.id, ARG_DIRECTORY);
+    config.directory = argv[ARG_DIRECTORY];
 }
 
 size_t getTrace(int argc, char* argv[], std::ifstream& trace_file, int arg_max_count) {
@@ -160,18 +165,20 @@ void usageMsg() {
     std::cout << "  (1) Run the simulator in textbook mode (see the manual for more info)" << std::endl;
     std::cout << "  (2) Run the simulator in metrics mode (see below)" << std::endl;
     std::cout << "Options:" << std::endl;
-    std::cout << "  configuration: Either a single memory bus configuration (see below) or" << std::endl;
-    std::cout << "                   the path to a file containing multiple memory bus configurations" << std::endl;
+    std::cout << "  configuration: Either a single memory system configuration (see below) or" << std::endl;
+    std::cout << "                   the path to a file containing multiple memory system configurations" << std::endl;
     std::cout << "  trace_file:    The path to the input trace file" << std::endl;
     std::cout << "  trace_limit:   (Optional) The maximum number of trace entries to read" << std::endl;
-    std::cout << "Memory bus configuration:" << std::endl;
+    std::cout << "Memory system configuration:" << std::endl;
     std::cout << "  Syntax:" << std::endl;
-    std::cout << "    <cache_size[unit]> <line_size> <associativity> <coherence> <replacer>" << std::endl;
+    std::cout << "    <cache_size[unit]> <line_size> <associativity> <coherence> <replacer> <directory>" << std::endl;
     std::cout << "  Options:" << std::endl;
     std::cout << "    associativity: The associativity of the cache" << std::endl;
     std::cout << "    cache_size:    The size of the cache in bytes or in the specified unit" << std::endl;
     std::cout << "    coherence:     The name of the coherence protocol (not case sensitive). One of:" << std::endl;
     for (auto& [coh, factory] : *coherence_map) std::cout << "                     - " << coh << std::endl;
+    std::cout << "    directory:     The name of the directory protocol (not case sensitive). One of:" << std::endl;
+    for (auto& [coh, factory] : *directory_map) std::cout << "                     - " << coh << std::endl;
     std::cout << "    line_size:     The size of a line in the cache" << std::endl;
     std::cout << "    replacer:      The name of the replacement policy (not case sensitive). One of:" << std::endl;
     for (auto& [rep, factory] : *replacement_map) std::cout << "                     - " << rep << std::endl;

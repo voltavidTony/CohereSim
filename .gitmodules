@@ -1,7 +1,7 @@
-[submodule "gem5"]
+[submodule "tools/gem5"]
     path = tools/gem5
     url = https://github.com/gem5/gem5
 
-[submodule "parsec-benchmark"]
+[submodule "tools/parsec-benchmark"]
     path = tools/parsec-benchmark
     url = https://github.com/cirosantilli/parsec-benchmark

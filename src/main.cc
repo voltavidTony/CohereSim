@@ -146,8 +146,8 @@ void readConfigurations(std::vector<cache_config>& configs, char* configs_file_p
     }
 
     // Cleanup
-    delete config_argv;
-    delete config_line_cstr;
+    delete[] config_argv;
+    delete[] config_line_cstr;
 }
 
 void printStatsHeader() {

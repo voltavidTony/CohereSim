@@ -10,7 +10,7 @@ FIFO::FIFO(CacheABC& cache, uint32_t num_sets, uint32_t assoc)
     up_next = new uint32_t[num_sets]{};
 }
 FIFO::~FIFO() {
-    delete up_next;
+    delete[] up_next;
 }
 
 uint32_t FIFO::getVictim(uint32_t set_idx) {

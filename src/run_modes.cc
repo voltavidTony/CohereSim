@@ -101,8 +101,8 @@ void runBatchMetrics(int argc, char* argv[]) {
         worker.join();
 
     // Cleanup
-    delete trace_buf;
-    delete trace_swap;
+    delete[] trace_buf;
+    delete[] trace_swap;
 }
 
 void runSingleMetrics(int argc, char* argv[]) {

@@ -24,7 +24,7 @@ The cache simulator is aimed at providing runtime metrics of a DSM processor to 
 
 This software operates under the GNU General Public License v3.0.
 
-A copy of this documentation is hosted on [my GitHub Pages](https://voltavidtony.github.io/docs/cache-sim/index.html).
+The repo is found on [my GitHub](https://github.com/voltavidTony/CohereSim). A copy of this documentation is hosted on [my GitHub Pages](https://voltavidtony.github.io/docs/cache-sim/index.html).
 
 ## Roadmap
 

@@ -41,13 +41,13 @@ The command line arguments for this mode are `<configs_file> <trace_file> [trace
 - `trace_file`: The [trace file](docs/pages/templates.md) that the simulator should read in
 - `trace_limit`: (Optional) The maximum number of traces the simulator should process
 
-## Textbook Mode
+## Interactive Mode
 
-Textbook mode is designed not to produce metrics, but instead to allow the user to interactively investigate the behavior of any protocol or policy that a cache may implement.
+Interactive mode is designed not to produce metrics, but instead to allow the user to interactively investigate the behavior of any protocol or policy that a cache may implement.
 
 The simulator processes input received on `stdin` and prints the resulting state and any actions to `stdout` formatted as a table. The table generally reads left-to-right, top-to-bottom, and contains a series of command-action-result entries. The simulator continues processing input until `EOF`, which will never occur if the input is from the terminal. In this case, sending the program interupt signal (`Ctrl+C` or `Ctrl+D`) will close `stdin` instead of terminating the program, thus causing the program to exit naturally.
 
-The single command line argument is the name of the policy/protocol to showcase (not case sensitive). Depending on the choice, textbook mode will respond to a different set of commands (all case insensitive), detailed below:
+The single command line argument is the name of the policy/protocol to showcase (not case sensitive). Depending on the choice, interactive mode will respond to a different set of commands (all case insensitive), detailed below:
 
 **Coherence Protocol:**
 

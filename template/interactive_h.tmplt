@@ -3,16 +3,16 @@
 
 #pragma once
 
-#include "textbook_mode.h"
+#include "interactive_mode.h"
 
-/// @brief The TextbookMode class for 
-class __CLASS__ : public TextbookMode {
+/// @brief The InteractiveMode class for 
+class __CLASS__ : public InteractiveMode {
 public:
 
-    /// @brief Construct a new textbook mode cache
+    /// @brief Construct a new interactive mode cache
     /// @param p_name The policy/protocol to use
     __CLASS__(std::string p_name);
-    /// @brief Finalize the textbook mode output
+    /// @brief Finalize the interactive mode output
     ~__CLASS__();
 
     /// @brief Evaluate a command received from the input

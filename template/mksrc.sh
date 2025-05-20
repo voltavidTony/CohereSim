@@ -4,7 +4,7 @@
 if [ $# -eq 0 ]; then
   echo "Usage:"
   echo "  ./mksrc.sh coherence <class_name> <states..>"
-  echo "  ./mksrc.sh directory|replacement|textbook <class_name>"
+  echo "  ./mksrc.sh directory|interactive|replacement <class_name>"
   echo "  ./mksrc.sh <file_name>"
   echo "Options:"
   echo "  class_name: The name of the new policy/protocol (TitleCase)"
@@ -49,10 +49,10 @@ if [ $# -gt 1 ]; then
     "directory")
       ;;
 
-    "replacement")
+    "interactive")
       ;;
 
-    "textbook")
+    "replacement")
       ;;
 
     "coherence")
@@ -78,7 +78,7 @@ if [ $# -gt 1 ]; then
       ;;
 
     *)
-      echo "Unknown template option: $1. Only 'coherence', 'replacement', and 'textbook' are available!"
+      echo "Unknown template option: $1. Only 'coherence', 'interactive', and 'replacement' are available!"
       exit 1
       ;;
   esac

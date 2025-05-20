@@ -1,8 +1,8 @@
-/// @file textbook_mode_replacer.cc
-/// @brief Implementation of the TextbookModeReplacer class
+/// @file interactive_mode_replacer.cc
+/// @brief Implementation of the InteractiveModeReplacer class
 
 #include "replacement_policy.h"
-#include "textbook_mode_replacer.h"
+#include "interactive_mode_replacer.h"
 
 /// @brief Table column widths
 enum col_width_e {
@@ -11,18 +11,18 @@ enum col_width_e {
     /// @brief String length of the word "Victim"
     COL_WIDTH_VICTIM = 6,
     /// @brief Space for the tags of all caches
-    COL_WIDTH_TAGS = 2 * N_TEXTBOOK_LINES - 1,
+    COL_WIDTH_TAGS = 2 * N_INTERACTIVE_MODE_LINES - 1,
     /// @brief String length of the words "Replacer State" + 1
     COL_WIDTH_REP_STATE = 15
 };
 
-TextbookModeReplacer::TextbookModeReplacer(std::string replacement_policy_name)
-    : TextbookMode(replacement_policy_name), accessee(' '), victim(' ') {
+InteractiveModeReplacer::InteractiveModeReplacer(std::string replacement_policy_name)
+    : InteractiveMode(replacement_policy_name), accessee(' '), victim(' ') {
     // Initialize cache components
-    replacement_policy = (*replacement_map)[p_name](*this, 1, N_TEXTBOOK_LINES);
+    replacement_policy = (*replacement_map)[p_name](*this, 1, N_INTERACTIVE_MODE_LINES);
 
     // Initialize cache lines
-    for (uint32_t i = 0; i < N_TEXTBOOK_LINES; i++) {
+    for (uint32_t i = 0; i < N_INTERACTIVE_MODE_LINES; i++) {
         lines[i].tag = 0;
         lines[i].state = I;
     }
@@ -35,13 +35,13 @@ TextbookModeReplacer::TextbookModeReplacer(std::string replacement_policy_name)
     printSeparator();
     printStats();
 }
-TextbookModeReplacer::~TextbookModeReplacer() {
+InteractiveModeReplacer::~InteractiveModeReplacer() {
     delete replacement_policy;
     // Close out the table
     printSeparator();
 }
 
-bool TextbookModeReplacer::evalutateCommand(std::string& cmd) {
+bool InteractiveModeReplacer::evalutateCommand(std::string& cmd) {
     // Only accept one letter commands
     if (cmd.length() != 1) return false;
 
@@ -62,11 +62,11 @@ bool TextbookModeReplacer::evalutateCommand(std::string& cmd) {
     return false;
 }
 
-void TextbookModeReplacer::printCmdFormatMessage() {
+void InteractiveModeReplacer::printCmdFormatMessage() {
     std::cerr << "Command must be a letter between 'A' and 'Z' or '-'" << std::endl;
 }
 
-void TextbookModeReplacer::receiveAccess(tag_t tag) {
+void InteractiveModeReplacer::receiveAccess(tag_t tag) {
     accessee = tag;
     victim = ' ';
 
@@ -76,15 +76,15 @@ void TextbookModeReplacer::receiveAccess(tag_t tag) {
      */
 
      // Find line
-    uint32_t line_idx = N_TEXTBOOK_LINES;
-    for (uint32_t i = 0; i < N_TEXTBOOK_LINES; i++)
+    uint32_t line_idx = N_INTERACTIVE_MODE_LINES;
+    for (uint32_t i = 0; i < N_INTERACTIVE_MODE_LINES; i++)
         if (lines[i].tag == tag) {
             line_idx = i;
             break;
         }
 
     // Allocate line if not found
-    if (line_idx == N_TEXTBOOK_LINES) {
+    if (line_idx == N_INTERACTIVE_MODE_LINES) {
         line_idx = replacement_policy->getVictim(0);
         victim = lines[line_idx].state ? std::toupper(lines[line_idx].tag) : ' ';
         lines[line_idx].tag = tag;
@@ -96,15 +96,15 @@ void TextbookModeReplacer::receiveAccess(tag_t tag) {
 
 }
 
-void TextbookModeReplacer::reset() {
+void InteractiveModeReplacer::reset() {
     // Reset attributes
     accessee = ' ';
     victim = ' ';
     delete replacement_policy;
-    replacement_policy = (*replacement_map)[p_name](*this, 1, N_TEXTBOOK_LINES);
+    replacement_policy = (*replacement_map)[p_name](*this, 1, N_INTERACTIVE_MODE_LINES);
 
     // Reset cache lines
-    for (uint32_t i = 0; i < N_TEXTBOOK_LINES; i++) {
+    for (uint32_t i = 0; i < N_INTERACTIVE_MODE_LINES; i++) {
         lines[i].tag = 0;
         lines[i].state = I;
     }
@@ -114,7 +114,7 @@ void TextbookModeReplacer::reset() {
     printStats();
 }
 
-void TextbookModeReplacer::printSeparator() {
+void InteractiveModeReplacer::printSeparator() {
     // Fill each column with dashes, the separator is a plus ('+')
     for (uint32_t i = 0; i < COL_WIDTH_ACCESS; i++)
         std::cout << '-';
@@ -129,7 +129,7 @@ void TextbookModeReplacer::printSeparator() {
         std::cout << '-';
     std::cout << std::endl;
 }
-void TextbookModeReplacer::printStats() {
+void InteractiveModeReplacer::printStats() {
     // Print the accessed line in the first column
     std::cout << std::setw(COL_WIDTH_ACCESS) << accessee << " | ";
 
@@ -138,7 +138,7 @@ void TextbookModeReplacer::printStats() {
 
     // Print resulting line tags
     std::cout << (lines[0].state ? (char)lines[0].tag : '-');
-    for (uint32_t i = 1; i < N_TEXTBOOK_LINES; i++)
+    for (uint32_t i = 1; i < N_INTERACTIVE_MODE_LINES; i++)
         std::cout << " " << (lines[i].state ? (char)lines[i].tag : '-');
     std::cout << " | ";
 

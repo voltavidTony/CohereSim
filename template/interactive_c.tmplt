@@ -7,11 +7,11 @@
 enum col_width_e {};
 
 __CLASS__::__CLASS__(std::string p_name)
-    : TextbookMode(p_name) {
+    : InteractiveMode(p_name) {
     // Initialize cache components
 
     // Initialize cache lines
-    for (uint32_t i = 0; i < N_TEXTBOOK_LINES; i++) {
+    for (uint32_t i = 0; i < N_INTERACTIVE_MODE_LINES; i++) {
         lines[i].tag = 0;
         lines[i].state = I;
     }
@@ -41,7 +41,7 @@ void __CLASS__::reset() {
     // Reset attributes
 
     // Reset cache lines
-    for (uint32_t i = 0; i < N_TEXTBOOK_LINES; i++) {
+    for (uint32_t i = 0; i < N_INTERACTIVE_MODE_LINES; i++) {
         lines[i].tag = 0;
         lines[i].state = I;
     }

@@ -1,5 +1,5 @@
 /// @file run_modes.cc
-/// @brief Implementation of the three modes of operation: Single Metrics, Batch Metrics, and Textbook
+/// @brief Implementation of the three modes of operation: Single Metrics, Batch Metrics, and Interactive
 
 #include <barrier>
 #include <csignal>
@@ -9,8 +9,8 @@
 
 #include "main.h"
 #include "memory_system.h"
-#include "textbook_mode_coherence.h"
-#include "textbook_mode_replacer.h"
+#include "interactive_mode_coherence.h"
+#include "interactive_mode_replacer.h"
 
 /// @brief The number of traces to buffer at a time
 #define N_TRACE_BUF 1000000
@@ -140,14 +140,14 @@ void runSingleMetrics(int argc, char* argv[]) {
     memory_system->printStats();
 }
 
-void runTextbookMode(char* name_of_showcased) {
-    // Get the correct textbook mode class
-    TextbookMode* textbook_mode;
-    if (coherence_map->count(name_of_showcased)) textbook_mode = new TextbookModeCoherence(name_of_showcased);
-    else if (replacement_map->count(name_of_showcased)) textbook_mode = new TextbookModeReplacer(name_of_showcased);
+void runInteractiveMode(char* name_of_showcased) {
+    // Get the correct interactive mode class
+    InteractiveMode* interactive_mode;
+    if (coherence_map->count(name_of_showcased)) interactive_mode = new InteractiveModeCoherence(name_of_showcased);
+    else if (replacement_map->count(name_of_showcased)) interactive_mode = new InteractiveModeReplacer(name_of_showcased);
     else {
-        std::cerr << ARG_TEXTBOOK << '@' << 0 << ": " << "Couldn't find a coherence protocol or replacement policy with that name!" << std::endl;
-        exit(ARG_TEXTBOOK);
+        std::cerr << ARG_INTERACTIVE << '@' << 0 << ": " << "Couldn't find a coherence protocol or replacement policy with that name!" << std::endl;
+        exit(ARG_INTERACTIVE);
     }
 
     // Setup sigint catch (so that bottom border of table can be printed)
@@ -166,13 +166,13 @@ void runTextbookMode(char* name_of_showcased) {
         if (line.empty() || line[0] == '#') continue;
 
         // Evaluate command
-        if (!textbook_mode->evalutateCommand(line)) {
+        if (!interactive_mode->evalutateCommand(line)) {
             // Bad command
             if (!isatty(fileno(stdin))) std::cerr << "Line " << line_count << ": ";
-            textbook_mode->printCmdFormatMessage();
+            interactive_mode->printCmdFormatMessage();
         }
     }
 
     // Cleanup
-    delete textbook_mode;
+    delete interactive_mode;
 }

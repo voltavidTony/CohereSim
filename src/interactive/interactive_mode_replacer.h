@@ -1,19 +1,19 @@
-/// @file textbook_mode_replacer.h
-/// @brief Declaration of the TextbookModeReplacer class
+/// @file interactive_mode_replacer.h
+/// @brief Declaration of the InteractiveModeReplacer class
 
 #pragma once
 
-#include "textbook_mode.h"
+#include "interactive_mode.h"
 
-/// @brief The TextbookMode class for replacement policies
-class TextbookModeReplacer : public TextbookMode {
+/// @brief The InteractiveMode class for replacement policies
+class InteractiveModeReplacer : public InteractiveMode {
 public:
 
-    /// @brief Construct a new textbook mode cache showcasing a replacement policy
+    /// @brief Construct a new interactive mode cache showcasing a replacement policy
     /// @param replacement_policy_name The replacement policy to use
-    TextbookModeReplacer(std::string replacement_policy_name);
-    /// @brief Finalize the textbook mode output
-    ~TextbookModeReplacer();
+    InteractiveModeReplacer(std::string replacement_policy_name);
+    /// @brief Finalize the interactive mode output
+    ~InteractiveModeReplacer();
 
     /// @brief Evaluate a command received from the input
     /// @param cmd The input command

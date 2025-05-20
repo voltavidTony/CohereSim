@@ -1,11 +1,11 @@
-/// @file textbook_mode_coherence.h
-/// @brief Declaration of the TextbookModeCoherence and BusEvent classes
+/// @file interactive_mode_coherence.h
+/// @brief Declaration of the InteractiveModeCoherence and BusEvent classes
 
 #pragma once
 
 #include <vector>
 
-#include "textbook_mode.h"
+#include "interactive_mode.h"
 
 /// @brief The BusEvent class
 struct bus_event {
@@ -24,15 +24,15 @@ struct bus_event {
     bus_event(statistic_e stat, uint32_t issuer);
 };
 
-/// @brief The TextbookMode class for coherence protocols
-class TextbookModeCoherence : public TextbookMode {
+/// @brief The InteractiveMode class for coherence protocols
+class InteractiveModeCoherence : public InteractiveMode {
 public:
 
-    /// @brief Construct a new textbook mode cache showcasing a coherence protocol
+    /// @brief Construct a new interactive mode cache showcasing a coherence protocol
     /// @param coherence_protocol_name The coherence protocol to use
-    TextbookModeCoherence(std::string coherence_protocol_name);
-    /// @brief Finalize the textbook mode output
-    ~TextbookModeCoherence();
+    InteractiveModeCoherence(std::string coherence_protocol_name);
+    /// @brief Finalize the interactive mode output
+    ~InteractiveModeCoherence();
 
     /// @brief Evaluate a command received from the input
     /// @param cmd The input command

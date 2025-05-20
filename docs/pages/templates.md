@@ -24,11 +24,11 @@ The name of the replacement policy is in `TitleCase`. This will create a source 
 
 Note:: The `ReplacementPolicy` base class contains default implementations for all methods, so if the specific replacement policy does not require one of them to operate correctly, it can be entirely removed from the header and source files. For instance, the random replacement (`RR`) policy does not reimplement the `ReplacementPolicy::touch` method.
 
-### Option 4: Textbook Mode Source File
+### Option 4: Interactive Mode Source File
 
-The name of the textbook mode cache is in `TitleCase`. This will create a source and header file pair in the `src/textbook` directory from the template files. The class will contain blank (default behavior) methods ready to accept the concrete implementation of the specific replacement policy.
+The name of the interactive mode cache is in `TitleCase`. This will create a source and header file pair in the `src/interactive` directory from the template files. The class will contain blank (default behavior) methods ready to accept the concrete implementation of the specific replacement policy.
 
-Note:: The `TextbookMode` base class is abstract, most methods require implementation in the specific textbook mode cache. Only `TextbookMode::issueBusMsg` and `TextbookMode::getLineState` have default implementations making them optional in the specific textbook mode cache. They exist to cater to the different needs of the policy/protocol used. For instance, the TextbookModeReplacer class does not issue bus messages and thus does not implement the `TextbookMode::issueBusMsg` method.
+Note:: The `InteractiveMode` base class is abstract, most methods require implementation in the specific interactive mode cache. Only `InteractiveMode::issueBusMsg` and `InteractiveMode::getLineState` have default implementations making them optional in the specific interactive mode cache. They exist to cater to the different needs of the policy/protocol used. For instance, the InteractiveModeReplacer class does not issue bus messages and thus does not implement the `InteractiveMode::issueBusMsg` method.
 
 ### Option 5: Generic Source File
 
@@ -40,7 +40,7 @@ Note:: This script is located in the `template` directory, but can be run from a
 
 Usage:
 1. `./mksrc.sh coherence <class_name> <states..>`
-2. `./mksrc.sh directory|replacement|textbook <class_name>`
+2. `./mksrc.sh directory|interactive|replacement <class_name>`
 3. `./mksrc.sh <file_name>`
 
 - `class_name`: The name of the new policy/protocol (TitleCase)

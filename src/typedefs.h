@@ -10,12 +10,12 @@
 #include <iostream>
 #include <map>
 
-#ifndef N_TEXTBOOK_LINES
-/// @brief The number of cache lines that textbook mode uses
-#define N_TEXTBOOK_LINES 5
+#ifndef N_INTERACTIVE_MODE_LINES
+/// @brief The number of cache lines that interactive mode uses
+#define N_INTERACTIVE_MODE_LINES 5
 #endif
-#if N_TEXTBOOK_LINES > 9
-#error("N_TEXTBOOK_LINES must be a single digit number")
+#if N_INTERACTIVE_MODE_LINES > 9
+#error("N_INTERACTIVE_MODE_LINES must be a single digit number")
 #endif
 
 /// @brief Cache class
@@ -53,11 +53,11 @@ enum args_batch_e {
     ARG_M_COUNT
 };
 
-/// @brief Argument indices for textbook (interactive) mode
-enum args_textbook_e {
-    ARG_T_PROG,
-    ARG_TEXTBOOK,
-    ARG_T_COUNT
+/// @brief Argument indices for interactive mode
+enum args_interactive_e {
+    ARG_I_PROG,
+    ARG_INTERACTIVE,
+    ARG_I_COUNT
 };
 
 /// @brief Cache line state

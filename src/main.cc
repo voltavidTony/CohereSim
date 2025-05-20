@@ -162,7 +162,7 @@ void usageMsg() {
     std::cout << "  (1) ./simulate_cache <coherence|replacer>" << std::endl;
     std::cout << "  (2) ./simulate_cache <configuration> <trace_file> [trace_limit]" << std::endl;
     std::cout << "Description:" << std::endl;
-    std::cout << "  (1) Run the simulator in textbook mode (see the manual for more info)" << std::endl;
+    std::cout << "  (1) Run the simulator in interactive mode (see the manual for more info)" << std::endl;
     std::cout << "  (2) Run the simulator in metrics mode (see below)" << std::endl;
     std::cout << "Options:" << std::endl;
     std::cout << "  configuration: Either a single memory system configuration (see below) or" << std::endl;
@@ -196,8 +196,8 @@ int main(int argc, char* argv[]) {
     case NO_ARGS:
         usageMsg();
         return 0;
-    case ARG_T_COUNT:
-        runTextbookMode(argv[ARG_TEXTBOOK]);
+    case ARG_I_COUNT:
+        runInteractiveMode(argv[ARG_INTERACTIVE]);
         return 0;
     case ARG_M_COUNT - 1:
     case ARG_M_COUNT:

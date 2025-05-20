@@ -13,6 +13,6 @@ void runBatchMetrics(int argc, char* argv[]);
 /// @param argv The array of program arguments
 void runSingleMetrics(int argc, char* argv[]);
 
-/// @brief Run the program in textbook mode (aka interactive mode)
+/// @brief Run the program in interactive mode (aka interactive mode)
 /// @param name_of_showcased The selected policy/protocol
-void runTextbookMode(char* name_of_showcased);
+void runInteractiveMode(char* name_of_showcased);

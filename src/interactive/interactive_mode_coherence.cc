@@ -1,8 +1,8 @@
-/// @file textbook_mode_coherence.cc
-/// @brief Implementation of the TextbookModeCoherence and BusEvent classes
+/// @file interactive_mode_coherence.cc
+/// @brief Implementation of the InteractiveModeCoherence and BusEvent classes
 
 #include "coherence_protocol.h"
-#include "textbook_mode_coherence.h"
+#include "interactive_mode_coherence.h"
 
 /// @brief Dummy tag value indicating that a line is allocated
 #define ALLOCATED 0x55555555
@@ -26,19 +26,19 @@ enum col_width_e {
     /// @brief String length of "Main Memory" or "Data Source"
     COL_WIDTH_SOURCE = 11,
     /// @brief Space for the states of all caches
-    COL_WIDTH_STATES = 3 * N_TEXTBOOK_LINES - 1
+    COL_WIDTH_STATES = 3 * N_INTERACTIVE_MODE_LINES - 1
 };
 
 bus_event::bus_event(bus_msg_e bmsg, uint32_t issuer) : event(bmsg), issuer(issuer) {}
 bus_event::bus_event(statistic_e stat, uint32_t issuer) : event(stat), issuer(issuer) {}
 
-TextbookModeCoherence::TextbookModeCoherence(std::string coherence_protocol_name)
-    : TextbookMode(coherence_protocol_name), command(Invalidation, 0) { // Here Invalidation is used to represent the lack of command
+InteractiveModeCoherence::InteractiveModeCoherence(std::string coherence_protocol_name)
+    : InteractiveMode(coherence_protocol_name), command(Invalidation, 0) { // Here Invalidation is used to represent the lack of command
     // Initialize cache components
     coherence_protocol = (*coherence_map)[p_name](*this);
 
     // Initialize cache lines
-    for (uint32_t i = 0; i < N_TEXTBOOK_LINES; i++) {
+    for (uint32_t i = 0; i < N_INTERACTIVE_MODE_LINES; i++) {
         lines[i].tag = 0;
         lines[i].state = I;
     }
@@ -51,20 +51,20 @@ TextbookModeCoherence::TextbookModeCoherence(std::string coherence_protocol_name
     printSeparator();
     printStats();
 }
-TextbookModeCoherence::~TextbookModeCoherence() {
+InteractiveModeCoherence::~InteractiveModeCoherence() {
     delete coherence_protocol;
     // Close out the table
     printSeparator();
 }
 
-bool TextbookModeCoherence::evalutateCommand(std::string& cmd) {
+bool InteractiveModeCoherence::evalutateCommand(std::string& cmd) {
     // Reset command (R is already taken; X for clear)
     if (cmd.length() == 1 && (cmd[0] == 'x' || cmd[0] == 'X')) {
         reset();
         return true;
     }
 
-    if (cmd.length() == 2 && '1' <= cmd[1] && cmd[1] <= ('0' + N_TEXTBOOK_LINES)) {
+    if (cmd.length() == 2 && '1' <= cmd[1] && cmd[1] <= ('0' + N_INTERACTIVE_MODE_LINES)) {
         switch (cmd[0]) {
         case 'e':
         case 'E': // Evict command
@@ -88,7 +88,7 @@ bool TextbookModeCoherence::evalutateCommand(std::string& cmd) {
     return false;
 }
 
-bool TextbookModeCoherence::issueBusMsg(bus_msg_e bus_msg) {
+bool InteractiveModeCoherence::issueBusMsg(bus_msg_e bus_msg) {
     bus_events.emplace_back(bus_msg, command.issuer);
 
     bool copies = false;
@@ -100,7 +100,7 @@ bool TextbookModeCoherence::issueBusMsg(bus_msg_e bus_msg) {
     case BusUpgrade:
     case BusWrite:
         // Send the bus message to each cache, keeping track of if copies exist and if any line was flushed
-        for (uint32_t i = 0; i < N_TEXTBOOK_LINES; i++)
+        for (uint32_t i = 0; i < N_INTERACTIVE_MODE_LINES; i++)
             if (i != command.issuer && lines[i].state) {
                 if (receiveBusMsg(bus_msg, i)) {
                     bus_events.emplace_back(LineFlush, i);
@@ -115,11 +115,11 @@ bool TextbookModeCoherence::issueBusMsg(bus_msg_e bus_msg) {
     // Figure out where the cache line was read in from
     if ((bus_msg == BusRead || bus_msg == BusReadX)) {
         if (flushed) bus_events.emplace_back(CacheToCache, command.issuer);
-        else bus_events.emplace_back(LineFetch, N_TEXTBOOK_LINES);
+        else bus_events.emplace_back(LineFetch, N_INTERACTIVE_MODE_LINES);
     }
     return copies;
 }
-bool TextbookModeCoherence::receiveBusMsg(bus_msg_e bus_msg, uint32_t cache_id) {
+bool InteractiveModeCoherence::receiveBusMsg(bus_msg_e bus_msg, uint32_t cache_id) {
     // Map bus_msg_e to the appropriate function call
     switch (bus_msg) {
     case BusRead: {
@@ -143,11 +143,11 @@ bool TextbookModeCoherence::receiveBusMsg(bus_msg_e bus_msg, uint32_t cache_id) 
     }
 }
 
-void TextbookModeCoherence::printCmdFormatMessage() {
-    std::cerr << "Command must be 'E', 'R', or 'W' followed by a number between 1 and " << N_TEXTBOOK_LINES << ", or 'X'" << std::endl;
+void InteractiveModeCoherence::printCmdFormatMessage() {
+    std::cerr << "Command must be 'E', 'R', or 'W' followed by a number between 1 and " << N_INTERACTIVE_MODE_LINES << ", or 'X'" << std::endl;
 }
 
-void TextbookModeCoherence::receiveEvict(uint32_t cache_id) {
+void InteractiveModeCoherence::receiveEvict(uint32_t cache_id) {
     // Start a cache line eviction
     bus_events.clear();
     command = { Eviction, cache_id };
@@ -167,7 +167,7 @@ void TextbookModeCoherence::receiveEvict(uint32_t cache_id) {
     lines[cache_id].tag = 0;
     lines[cache_id].state = I;
 }
-void TextbookModeCoherence::receivePrRd(uint32_t cache_id) {
+void InteractiveModeCoherence::receivePrRd(uint32_t cache_id) {
     // Start a processor write operation
     bus_events.clear();
     command = { ProcRead, cache_id };
@@ -187,7 +187,7 @@ void TextbookModeCoherence::receivePrRd(uint32_t cache_id) {
     // Initiate the PrRd state change
     coherence_protocol->PrRd(&lines[cache_id]);
 }
-void TextbookModeCoherence::receivePrWr(uint32_t cache_id) {
+void InteractiveModeCoherence::receivePrWr(uint32_t cache_id) {
     // Start a processor write operation
     bus_events.clear();
     command = { ProcWrite, cache_id };
@@ -210,7 +210,7 @@ void TextbookModeCoherence::receivePrWr(uint32_t cache_id) {
     coherence_protocol->PrWr(lines[cache_id].tag ? &lines[cache_id] : nullptr);
 }
 
-void TextbookModeCoherence::reset() {
+void InteractiveModeCoherence::reset() {
     // Reset attributes
     command.event = Invalidation;
     command.issuer = 0;
@@ -218,7 +218,7 @@ void TextbookModeCoherence::reset() {
     coherence_protocol = (*coherence_map)[p_name](*this);
 
     // Reset cache lines
-    for (uint32_t i = 0; i < N_TEXTBOOK_LINES; i++) {
+    for (uint32_t i = 0; i < N_INTERACTIVE_MODE_LINES; i++) {
         lines[i].tag = 0;
         lines[i].state = I;
     }
@@ -228,7 +228,7 @@ void TextbookModeCoherence::reset() {
     printStats();
 }
 
-void TextbookModeCoherence::printSeparator() {
+void InteractiveModeCoherence::printSeparator() {
     // Fill each column with dashes, the separator is a plus ('+')
     for (uint32_t i = 0; i < COL_WIDTH_OP; i++)
         std::cout << '-';
@@ -247,7 +247,7 @@ void TextbookModeCoherence::printSeparator() {
     bus_events.clear();
     command = { Invalidation, 0 };  // Here Invalidation is used to represent the lack of command
 }
-void TextbookModeCoherence::printStats() {
+void InteractiveModeCoherence::printStats() {
     // Print the command in the first column
     switch (command.event) {
     case Eviction:
@@ -274,7 +274,7 @@ void TextbookModeCoherence::printStats() {
     } else {
         // There are bus events, print the first one
         std::cout << " | " << std::setw(COL_WIDTH_EVENT) << bus_event_names[it->event] << " | ";
-        std::cout << std::setw(COL_WIDTH_SOURCE) << (it->issuer == N_TEXTBOOK_LINES ? "Main Memory" : "");
+        std::cout << std::setw(COL_WIDTH_SOURCE) << (it->issuer == N_INTERACTIVE_MODE_LINES ? "Main Memory" : "");
         it++;
     }
     // Print each subsequent bus event
@@ -284,7 +284,7 @@ void TextbookModeCoherence::printStats() {
         // Print the bus message in the second column
         std::cout << std::setw(COL_WIDTH_EVENT - 2) << bus_event_names[it->event] << " | ";
         // Print the source in the third column
-        if (it->issuer == N_TEXTBOOK_LINES)
+        if (it->issuer == N_INTERACTIVE_MODE_LINES)
             std::cout << std::setw(COL_WIDTH_SOURCE) << "Main Memory";
         else if (it->issuer != command.issuer)
             std::cout << 'P' << std::setw(COL_WIDTH_SOURCE - 1) << it->issuer + 1;
@@ -293,7 +293,7 @@ void TextbookModeCoherence::printStats() {
 
     // Print resulting cache line states
     std::cout << " |";
-    for (uint32_t i = 0; i < N_TEXTBOOK_LINES; i++)
+    for (uint32_t i = 0; i < N_INTERACTIVE_MODE_LINES; i++)
         std::cout << (lines[i].tag ? state_names[lines[i].state] : " - ");
     std::cout << std::endl;
 }

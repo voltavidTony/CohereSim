@@ -1,19 +1,19 @@
-/// @file textbook_mode.h
-/// @brief Declaration of the TextbookMode base class
+/// @file interactive_mode.h
+/// @brief Declaration of the InteractiveMode base class
 
 #pragma once
 
 #include "cache_abc.h"
 
-/// @brief The TextbookMode abstract base class
-class TextbookMode : public CacheABC {
+/// @brief The InteractiveMode abstract base class
+class InteractiveMode : public CacheABC {
 public:
 
-    /// @brief Construct a new textbook mode cache
+    /// @brief Construct a new interactive mode cache
     /// @param p_name The policy/protocol name
-    TextbookMode(std::string p_name) : p_name(p_name) {}
-    /// @brief Finalize the textbook mode output
-    virtual ~TextbookMode() {}
+    InteractiveMode(std::string p_name) : p_name(p_name) {}
+    /// @brief Finalize the interactive mode output
+    virtual ~InteractiveMode() {}
 
     /// @brief Evaluate a command received from the input
     /// @param cmd The input command
@@ -36,11 +36,11 @@ public:
 
 protected:
 
-    /// @brief The name of the policy/protocol being run in textbook mode
+    /// @brief The name of the policy/protocol being run in interactive mode
     std::string p_name;
 
-    /// @brief The cache lines in textbook mode
-    cache_line lines[N_TEXTBOOK_LINES];
+    /// @brief The cache lines in interactive mode
+    cache_line lines[N_INTERACTIVE_MODE_LINES];
 
 private:
 

@@ -11,7 +11,7 @@ public:
 
     /// @brief Construct a new __CLASS__ coherence protocol
     /// @param cache The parent cache
-    __CLASS__(Cache& cache) : CoherenceProtocol(cache) {}
+    __CLASS__(CacheABC& cache) : CoherenceProtocol(cache) {}
 
     /// @brief Receive a PrRd message
     /// @param line The cache line accessed (non-null)

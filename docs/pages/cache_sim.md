@@ -1,16 +1,16 @@
-# Simulator Operation Manual
+# CohereSim Operation Manual
 
 [TOC]
 
-The simulator is designed to explore various aspects of a cache configuration. As such, there are multiple modes of operation as described below:
+CohereSim is designed to explore various aspects of a cache configuration. As such, there are multiple modes of operation as described below:
 
 ## Metrics Modes
 
 The two metrics modes are where a [trace file](docs/pages/templates.md) is read in and processed by one or more cache configurations. They are designed to generate runtime metrics enabling comparison of cache performance based on the cahce's configuration and the sequence of memory accesses ([trace file](docs/pages/templates.md)) produced by different benchmarks.
 
-The simulator counts the occurrence of many different events and prints them to `stdout` after the last trace is processed. The output is in CSV format, allowing the user to directly import the data into their choice of spreadsheet software (or save it for later) by redirecting `stdout` to a `.csv` file. The output contains one column for each of the statistics defined in the `::bus_msg_e` and `::statistic_e` enums, in addition to a `miss rate` column which is computed using other statistics. Since the simulator processes multicore memory accesses for one or more configurations, `config` and `core` columns are included as identifyers in the output.
+CohereSim counts the occurrence of many different events and prints them to `stdout` after the last trace is processed. The output is in CSV format, allowing the user to directly import the data into their choice of spreadsheet software (or save it for later) by redirecting `stdout` to a `.csv` file. The output contains one column for each of the statistics defined in the `::bus_msg_e` and `::statistic_e` enums, in addition to a `miss rate` column which is computed using other statistics. Since CohereSim processes multicore memory accesses for one or more configurations, `config` and `core` columns are included as identifyers in the output.
 
-The simulator does not process input from `stdin` in these two modes.
+CohereSim does not process input from `stdin` in these two modes.
 
 ### Single
 
@@ -24,10 +24,10 @@ The command line arguments are `<cache_size[unit]> <line_size> <associativity> <
 - `directory`: The name of the cirectory protocol the cache should implement (not case sensitive)
 - `line_size`: The size of a single cache line in bytes.
 - `replacer`: The name of the replacement policy the cache should implement (not case sensitive)
-- `trace_file`: The [trace file](docs/pages/templates.md) that the simulator should read in
-- `trace_limit`: (Optional) The maximum number of traces the simulator should process
+- `trace_file`: The [trace file](docs/pages/templates.md) that CohereSim should read in
+- `trace_limit`: (Optional) The maximum number of traces CohereSim should process
 
-Note:: Every cache dimension must be a power of 2. Any other value is rejected by the simulator.
+Note:: Every cache dimension must be a power of 2. Any other value is rejected by CohereSim.
 
 ### Batch
 
@@ -38,14 +38,14 @@ Note:: Due to each configuration processing the trace file in parallel, the orde
 The command line arguments for this mode are `<configs_file> <trace_file> [trace_limit]`
 
 - `configs_file`: The file containing a series of cache configurations
-- `trace_file`: The [trace file](docs/pages/templates.md) that the simulator should read in
-- `trace_limit`: (Optional) The maximum number of traces the simulator should process
+- `trace_file`: The [trace file](docs/pages/templates.md) that CohereSim should read in
+- `trace_limit`: (Optional) The maximum number of traces CohereSim should process
 
 ## Interactive Mode
 
 Interactive mode is designed not to produce metrics, but instead to allow the user to interactively investigate the behavior of any protocol or policy that a cache may implement.
 
-The simulator processes input received on `stdin` and prints the resulting state and any actions to `stdout` formatted as a table. The table generally reads left-to-right, top-to-bottom, and contains a series of command-action-result entries. The simulator continues processing input until `EOF`, which will never occur if the input is from the terminal. In this case, sending the program interupt signal (`Ctrl+C` or `Ctrl+D`) will close `stdin` instead of terminating the program, thus causing the program to exit naturally.
+CohereSim processes input received on `stdin` and prints the resulting state and any actions to `stdout` formatted as a table. The table generally reads left-to-right, top-to-bottom, and contains a series of command-action-result entries. CohereSim continues processing input until `EOF`, which will never occur if the input is from the terminal. In this case, sending the program interupt signal (`Ctrl+C` or `Ctrl+D`) will close `stdin` instead of terminating the program, thus causing the program to exit naturally.
 
 The single command line argument is the name of the policy/protocol to showcase (not case sensitive). Depending on the choice, interactive mode will respond to a different set of commands (all case insensitive), detailed below:
 

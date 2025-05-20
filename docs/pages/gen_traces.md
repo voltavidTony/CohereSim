@@ -18,7 +18,7 @@
 
 ### 2 Initialize local copy
 
-If you haven't already, download this repo with the following command: `git clone --recurse-submodules https://github.com/voltavidTony/cache-sim.git`. If you already have this repo, but not the gem5 and parsec-benchmark sub-modules, then run this command: `git submodule update --init`
+If you haven't already, download this repo with the following command: `git clone --recurse-submodules https://github.com/voltavidTony/CohereSim.git`. If you already have this repo, but not the gem5 and parsec-benchmark sub-modules, then run this command: `git submodule update --init`
 
 ### 3 Build gem5
 

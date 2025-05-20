@@ -2,7 +2,7 @@
 
 [TOC]
 
-The exit code provides an indicator as to which exact argument has caused an error. This value may seem redundant as this information is also printed to `stderr`, but it's purpose is to make programmatic interaction with the simulator (scripting) easier.
+The exit code provides an indicator as to which exact argument has caused an error. This value may seem redundant as this information is also printed to `stderr`, but it's purpose is to make programmatic interaction with CohereSim (scripting) easier.
 
 ### Specific Values
 
